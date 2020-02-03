@@ -1,0 +1,17 @@
+version: v1.0
+name: "Terraform-Module-VPC CI Pipeline"
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: "Tests"
+    task:
+      prologue:
+        commands:
+          - checkout --use-cache
+      jobs:
+        - name: "Pre Commit Hooks"
+          commands:
+            - make docker/pre-commit-hooks
