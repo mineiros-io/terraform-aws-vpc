@@ -35,15 +35,19 @@ resource "aws_vpc" "vpc" {
 }
 
 # Create an Internet Gateway for the VPC
+# An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication
+# between instances in your VPC and the internet.
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
 
   tags = merge(
     { Name = var.vpc_name },
+    var.internet_gateway_tags,
     var.tags
   )
 }
 
+# Creates a range of public subnets
 resource "aws_subnet" "public" {
   for_each = var.public_subnets
 
@@ -53,8 +57,8 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = merge(
-    { Name = "${var.vpc_name}-${each.value}-public" },
-    var.endpoint_tags,
+    { Name = "${var.vpc_name}-public-subnet-${each.value}-${replace(replace(each.key, "/", "-"), ".", "-")}" },
+    var.public_subnet_tags,
     var.tags
   )
 }
@@ -65,7 +69,8 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.vpc.id
   tags = merge(
-    { Name = "${var.vpc_name}-public" },
+    { Name = "${var.vpc_name}-public-subnet-route-table" },
+    var.public_route_table_tags,
     var.tags
   )
 }
