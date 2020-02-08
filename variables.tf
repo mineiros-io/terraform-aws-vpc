@@ -17,7 +17,7 @@ variable "vpc_name" {
 }
 
 variable "cidr_block" {
-  description = "The CIDR block for the VPC. The permissible size of the block ranges between a /16 netmask and a /28 netmask."
+  description = "The CIDR block for the VPC. The permissible size of the block ranges between a /16 netmask and a /28 netmask. We advice you to use a CIDR block reserved for private address space as recommended in RFC 1918 http://www.faqs.org/rfcs/rfc1918.html."
   type        = string
 
   # VPCs can vary in size from 16 addresses (/28 netmask) to 65536 addresses (/16 netmask). See further Information here:

@@ -3,6 +3,21 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 # Create the VPC
+#
+# When you create a VPC, we recommend that you specify a CIDR block (of /16 or smaller) from the private IPv4 address
+# ranges as specified in RFC 1918 (http://www.faqs.org/rfcs/rfc1918.html):
+# - 10.0.0.0 - 10.255.255.255 (10/8 prefix)
+# - 172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
+# - 192.168.0.0 - 192.168.255.255 (192.168/16 prefix)
+#
+# The first four IP addresses and the last IP address in each subnet CIDR block are not available for you to use, and
+# cannot be assigned to an instance. For example, in a subnet with CIDR block 10.0.0.0/24, the following five IP
+# addresses are reserved:
+# - 10.0.0.0: Network address.
+# - 10.0.0.1: Reserved by AWS for the VPC router.
+# - 10.0.0.2: Reserved by AWS. The IP address of the DNS server is the base of the VPC network range plus two.
+#
+
 resource "aws_vpc" "vpc" {
   cidr_block                       = var.cidr_block
   instance_tenancy                 = var.instance_tenancy
@@ -143,6 +158,7 @@ resource "aws_eip" "nat" {
   depends_on = [aws_internet_gateway.internet_gateway]
 }
 
+# The qty of created NAT Gateways should be chosen carefully because each NAT Gateway produces costs 24/7
 resource "aws_nat_gateway" "nat" {
   for_each = var.num_nat_gateways > 0 ? aws_subnet.public : {}
 
