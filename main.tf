@@ -34,14 +34,6 @@ resource "aws_vpc" "vpc" {
   )
 }
 
-# Allows access to a filtered or unfiltered list of AWS Availability Zones which can be accessed by an AWS account
-# within the region configured in the provider.
-//data "aws_availability_zones" "filtered_list" {
-//  state                = var.availability_zone_state
-//  blacklisted_names    = var.availability_zone_blacklisted_names
-//  blacklisted_zone_ids = var.availability_zone_blacklisted_ids
-//}
-
 # Create an Internet Gateway for the VPC
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
