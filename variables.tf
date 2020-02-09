@@ -31,11 +31,6 @@ variable "cidr_block" {
   #
 }
 
-variable "num_nat_gateways" {
-  description = "The number of NAT Gateways to launch for this VPC. For production VPCs, a NAT Gateway should be placed in each Availability Zone (so likely 3 total), whereas for non-prod VPCs, just one Availability Zone (and hence 1 NAT Gateway) will suffice."
-  type        = number
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL VARIABLES
 # These variables have defaults, but may be overridden.
@@ -89,18 +84,23 @@ variable "map_public_ip_on_launch" {
   default     = false
 }
 
+//variable "public_subnets" {
+//  description = "A map of public subnets to create for this VPC."
+//  type        = map(string)
+//
+//  # Example:
+//  #
+//  # public_subnets = {
+//  #   "10.2.80.0/21"  = "us-east-1a",
+//  #   "10.2.96.0/21"  = "us-east-1a",
+//  #   "10.2.112.0/21" = "us-east-1b"
+//  # }
+//  default = {}
+//}
+
 variable "public_subnets" {
   description = "A map of public subnets to create for this VPC."
-  type        = map(string)
-
-  # Example:
-  #
-  # public_subnets = {
-  #   "10.2.80.0/21"  = "us-east-1a",
-  #   "10.2.96.0/21"  = "us-east-1a",
-  #   "10.2.112.0/21" = "us-east-1b"
-  # }
-  default = {}
+  type        = any
 }
 
 variable "tags" {

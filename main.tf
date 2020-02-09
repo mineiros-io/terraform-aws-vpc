@@ -47,17 +47,33 @@ resource "aws_internet_gateway" "internet_gateway" {
   )
 }
 
+# Prepare local subnet data structure
+locals {
+  public_subnets = {
+    for public_subnet in var.public_subnets :
+    replace(replace(public_subnet.cidr, ".", "-"), "/", "-") => {
+      availability_zone = public_subnet.availability_zone
+      cidr              = public_subnet.cidr
+      nat_gateway = {
+        enabled       = try(public_subnet.nat_gateway.enabled, false)
+        custom_eip_id = try(public_subnet.nat_gateway.custom_eip_id, null)
+      }
+    }
+  }
+
+}
+
 # Creates a range of public subnets
 resource "aws_subnet" "public" {
-  for_each = var.public_subnets
+  for_each = local.public_subnets
 
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = each.value
-  cidr_block              = each.key
+  availability_zone       = each.value["availability_zone"]
+  cidr_block              = each.value["cidr"]
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = merge(
-    { Name = "${var.vpc_name}-public-subnet-${each.value}-${replace(replace(each.key, "/", "-"), ".", "-")}" },
+    { Name = "${var.vpc_name}-public-subnet-${each.value["availability_zone"]}-${each.key}" },
     var.public_subnet_tags,
     var.tags
   )
@@ -98,6 +114,7 @@ resource "aws_route_table_association" "public" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 # LAUNCH THE NAT GATEWAYS
+#
 # A NAT Gateway enables instances in the private subnet to connect to the Internet or other AWS services, but prevents
 # the Internet from initiating a connection to those instances.
 #
@@ -105,12 +122,19 @@ resource "aws_route_table_association" "public" {
 # money.  When launching a production VPC, route traffic through one NAT Gateway per Availability Zone for maximum
 # availability.
 #
+# For production VPCs, a NAT Gateway should be placed in each Availability Zone (so likely 3 total), whereas for
+# non-prod VPCs, just one Availability Zone (and hence 1 NAT Gateway) will suffice.
+#
 # See https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
 # ---------------------------------------------------------------------------------------------------------------------
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
-  for_each = var.num_nat_gateways > 0 ? aws_subnet.public : {}
+  for_each = {
+    for cidr, subnet in aws_subnet.public : cidr => subnet
+    if local.public_subnets[cidr].nat_gateway.enabled == true &&
+    local.public_subnets[cidr].nat_gateway.custom_eip_id == null
+  }
 
   vpc  = true
   tags = var.tags
@@ -118,17 +142,21 @@ resource "aws_eip" "nat" {
   depends_on = [aws_internet_gateway.internet_gateway]
 }
 
-# The qty of created NAT Gateways should be chosen carefully because each NAT Gateway produces costs 24/7
+# Create the NAT Gateways
+# The quantity of created NAT Gateways should be chosen carefully, because each NAT Gateway produces costs 24/7
 resource "aws_nat_gateway" "nat" {
-  for_each = var.num_nat_gateways > 0 ? aws_subnet.public : {}
+  for_each = {
+    for cidr, subnet in aws_subnet.public : cidr => subnet
+    if local.public_subnets[cidr].nat_gateway.enabled
+  }
 
-  allocation_id = aws_eip.nat[each.key].id
+  allocation_id = local.public_subnets[each.key].nat_gateway.custom_eip_id == null ? aws_eip.nat[each.key].id : local.public_subnets[each.key].nat_gateway.custom_eip_id
 
   # ToDO: Routing
   subnet_id = aws_subnet.public[each.key].id
 
   tags = merge(
-    { Name = "${var.vpc_name}-nat-gateway" },
+    { Name = "${var.vpc_name}-${each.key}-nat-gateway" },
     var.tags,
     var.nat_gateway_tags,
   )
