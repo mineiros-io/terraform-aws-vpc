@@ -83,6 +83,8 @@ resource "aws_subnet" "public" {
 # - This routes all public traffic through the Internet gateway
 # - All traffic to endpoints within the VPC won't hit the public internet
 resource "aws_route_table" "public" {
+  count = length(local.public_subnets) > 0 ? 1 : 0
+
   vpc_id = aws_vpc.vpc.id
   tags = merge(
     { Name = "${var.vpc_name}-public-subnet-route-table" },
@@ -94,7 +96,9 @@ resource "aws_route_table" "public" {
 # It's important that we define this route as a separate terraform resource and not inline in aws_route_table.public because
 # otherwise Terraform will not function correctly, per the note at https://www.terraform.io/docs/providers/aws/r/route.html.
 resource "aws_route" "internet" {
-  route_table_id         = aws_route_table.public.id
+  count = length(local.public_subnets) > 0 ? 1 : 0
+
+  route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.internet_gateway.id
 
@@ -109,7 +113,7 @@ resource "aws_route_table_association" "public" {
   for_each = aws_subnet.public
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.public.id
+  route_table_id = aws_route_table.public[0].id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

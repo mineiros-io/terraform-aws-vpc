@@ -6,12 +6,16 @@
 # - Amazon S3
 # - DynamoDB
 # ---------------------------------------------------------------------------------------------------------------------
+
+# ToDo: creation of aws_vpc_endpoints should handled dynamically for all subnets
 resource "aws_vpc_endpoint" "s3" {
+  count = length(local.public_subnets) > 0 ? 1 : 0
+
   service_name = "com.amazonaws.${var.aws_region}.s3"
   vpc_id       = aws_vpc.vpc.id
 
   route_table_ids = concat(
-    [aws_route_table.public.id],
+    [aws_route_table.public[0].id],
   )
 
   tags = merge(
@@ -22,11 +26,13 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 resource "aws_vpc_endpoint" "dynamodb" {
+  count = length(local.public_subnets) > 0 ? 1 : 0
+
   vpc_id       = aws_vpc.vpc.id
   service_name = "com.amazonaws.${var.aws_region}.dynamodb"
 
   route_table_ids = concat(
-    [aws_route_table.public.id],
+    [aws_route_table.public[0].id],
   )
 
   tags = merge(
