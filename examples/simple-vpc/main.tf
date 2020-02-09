@@ -8,7 +8,7 @@ module "vpc" {
   public_subnets = [
     {
       availability_zone = "us-east-1a",
-      cidr              = "10.0.64.0/21",
+      cidr_block        = "10.0.64.0/21",
       nat_gateway = {
         enabled = true,
         # custom_eip_id = "eipalloc-0745573650c0f7c75"
@@ -16,14 +16,14 @@ module "vpc" {
     },
     {
       availability_zone = "us-east-1a",
-      cidr              = "10.0.80.0/21",
+      cidr_block        = "10.0.80.0/21",
       nat_gateway = {
         enabled = true
       }
     },
     {
       availability_zone = "us-east-1b",
-      cidr              = "10.0.96.0/21",
+      cidr_block        = "10.0.96.0/21",
 
     }
   ]

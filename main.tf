@@ -50,13 +50,13 @@ resource "aws_internet_gateway" "internet_gateway" {
 # Prepare local subnet data structure
 locals {
   public_subnets = {
-    for public_subnet in var.public_subnets :
-    replace(replace(public_subnet.cidr, ".", "-"), "/", "-") => {
-      availability_zone = public_subnet.availability_zone
-      cidr              = public_subnet.cidr
+    for subnet in var.public_subnets :
+    replace(replace(subnet.cidr_block, ".", "-"), "/", "-") => {
+      availability_zone = subnet.availability_zone
+      cidr_block        = subnet.cidr_block
       nat_gateway = {
-        enabled       = try(public_subnet.nat_gateway.enabled, false)
-        custom_eip_id = try(public_subnet.nat_gateway.custom_eip_id, null)
+        enabled       = try(subnet.nat_gateway.enabled, false)
+        custom_eip_id = try(subnet.nat_gateway.custom_eip_id, null)
       }
     }
   }
@@ -69,7 +69,7 @@ resource "aws_subnet" "public" {
 
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = each.value["availability_zone"]
-  cidr_block              = each.value["cidr"]
+  cidr_block              = each.value["cidr_block"]
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = merge(
@@ -131,9 +131,9 @@ resource "aws_route_table_association" "public" {
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
   for_each = {
-    for cidr, subnet in aws_subnet.public : cidr => subnet
-    if local.public_subnets[cidr].nat_gateway.enabled == true &&
-    local.public_subnets[cidr].nat_gateway.custom_eip_id == null
+    for cidr_block, subnet in aws_subnet.public : cidr_block => subnet
+    if local.public_subnets[cidr_block].nat_gateway.enabled == true &&
+    local.public_subnets[cidr_block].nat_gateway.custom_eip_id == null
   }
 
   vpc  = true
@@ -146,8 +146,8 @@ resource "aws_eip" "nat" {
 # The quantity of created NAT Gateways should be chosen carefully, because each NAT Gateway produces costs 24/7
 resource "aws_nat_gateway" "nat" {
   for_each = {
-    for cidr, subnet in aws_subnet.public : cidr => subnet
-    if local.public_subnets[cidr].nat_gateway.enabled
+    for cidr_block, subnet in aws_subnet.public : cidr_block => subnet
+    if local.public_subnets[cidr_block].nat_gateway.enabled
   }
 
   allocation_id = local.public_subnets[each.key].nat_gateway.custom_eip_id == null ? aws_eip.nat[each.key].id : local.public_subnets[each.key].nat_gateway.custom_eip_id
