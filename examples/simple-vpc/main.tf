@@ -1,5 +1,6 @@
 module "vpc" {
   source = "../.."
+  create = true
 
   vpc_name = "Test"
 

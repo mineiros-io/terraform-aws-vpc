@@ -42,6 +42,12 @@ variable "assign_generated_ipv6_cidr_block" {
   default     = false
 }
 
+variable "create" {
+  description = "Whether or not if the VPC and its should be created."
+  type        = bool
+  default     = true
+}
+
 variable "enable_classiclink" {
   description = "A boolean flag to enable/disable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. Read more: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html"
   type        = bool

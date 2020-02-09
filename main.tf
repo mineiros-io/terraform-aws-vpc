@@ -19,6 +19,8 @@
 #
 
 resource "aws_vpc" "vpc" {
+  count = var.create ? 1 : 0
+
   cidr_block                       = var.cidr_block
   instance_tenancy                 = var.instance_tenancy
   enable_dns_support               = var.enable_dns_support
@@ -34,11 +36,19 @@ resource "aws_vpc" "vpc" {
   )
 }
 
+locals {
+  vpc_id                = join("", aws_vpc.vpc.*.id)
+  public_route_table_id = join("", aws_route_table.public.*.id)
+  internet_gateway_id   = join("", aws_internet_gateway.internet_gateway.*.id)
+}
+
 # Create an Internet Gateway for the VPC
 # An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication
 # between instances in your VPC and the internet.
 resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.vpc.id
+  count = var.create ? 1 : 0
+
+  vpc_id = local.vpc_id
 
   tags = merge(
     { Name = var.vpc_name },
@@ -65,9 +75,9 @@ locals {
 
 # Creates a range of public subnets
 resource "aws_subnet" "public" {
-  for_each = local.public_subnets
+  for_each = var.create ? local.public_subnets : {}
 
-  vpc_id                  = aws_vpc.vpc.id
+  vpc_id                  = local.vpc_id
   availability_zone       = each.value["availability_zone"]
   cidr_block              = each.value["cidr_block"]
   map_public_ip_on_launch = var.map_public_ip_on_launch
@@ -83,9 +93,9 @@ resource "aws_subnet" "public" {
 # - This routes all public traffic through the Internet gateway
 # - All traffic to endpoints within the VPC won't hit the public internet
 resource "aws_route_table" "public" {
-  count = length(local.public_subnets) > 0 ? 1 : 0
+  count = var.create && length(local.public_subnets) > 0 ? 1 : 0
 
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = local.vpc_id
   tags = merge(
     { Name = "${var.vpc_name}-public-subnet-route-table" },
     var.public_route_table_tags,
@@ -96,11 +106,11 @@ resource "aws_route_table" "public" {
 # It's important that we define this route as a separate terraform resource and not inline in aws_route_table.public because
 # otherwise Terraform will not function correctly, per the note at https://www.terraform.io/docs/providers/aws/r/route.html.
 resource "aws_route" "internet" {
-  count = length(local.public_subnets) > 0 ? 1 : 0
+  count = var.create && length(local.public_subnets) > 0 ? 1 : 0
 
-  route_table_id         = aws_route_table.public[0].id
+  route_table_id         = local.public_route_table_id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.internet_gateway.id
+  gateway_id             = local.internet_gateway_id
 
   # Workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/338
   timeouts {
@@ -110,10 +120,10 @@ resource "aws_route" "internet" {
 
 # Associate each public subnet with a public route table
 resource "aws_route_table_association" "public" {
-  for_each = aws_subnet.public
+  for_each = var.create ? aws_subnet.public : {}
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.public[0].id
+  route_table_id = local.public_route_table_id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -134,11 +144,11 @@ resource "aws_route_table_association" "public" {
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
-  for_each = {
+  for_each = var.create ? {
     for cidr_block, subnet in aws_subnet.public : cidr_block => subnet
     if local.public_subnets[cidr_block].nat_gateway.enabled == true &&
     local.public_subnets[cidr_block].nat_gateway.custom_eip_id == null
-  }
+  } : {}
 
   vpc  = true
   tags = var.tags
@@ -149,10 +159,10 @@ resource "aws_eip" "nat" {
 # Create the NAT Gateways
 # The quantity of created NAT Gateways should be chosen carefully, because each NAT Gateway produces costs 24/7
 resource "aws_nat_gateway" "nat" {
-  for_each = {
+  for_each = var.create ? {
     for cidr_block, subnet in aws_subnet.public : cidr_block => subnet
     if local.public_subnets[cidr_block].nat_gateway.enabled
-  }
+  } : {}
 
   allocation_id = local.public_subnets[each.key].nat_gateway.custom_eip_id == null ? aws_eip.nat[each.key].id : local.public_subnets[each.key].nat_gateway.custom_eip_id
 
