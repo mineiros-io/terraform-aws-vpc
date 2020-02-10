@@ -77,12 +77,12 @@ resource "aws_subnet" "public" {
   for_each = var.create ? local.public_subnets : {}
 
   vpc_id                  = local.vpc_id
-  availability_zone       = each.value["availability_zone"]
-  cidr_block              = each.value["cidr_block"]
+  availability_zone       = each.value.availability_zone
+  cidr_block              = each.value.cidr_block
   map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = merge(
-    { Name = "${var.vpc_name}-public-subnet-${each.value["availability_zone"]}-${each.key}" },
+    { Name = "${var.vpc_name}-public-subnet-${each.value.availability_zone}-${each.key}" },
     var.public_subnet_tags,
     var.tags
   )
