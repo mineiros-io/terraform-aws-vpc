@@ -102,8 +102,7 @@ resource "aws_route_table" "public" {
   )
 }
 
-# It's important that we define this route as a separate terraform resource and not inline in aws_route_table.public because
-# otherwise Terraform will not function correctly, per the note at https://www.terraform.io/docs/providers/aws/r/route.html.
+# Route all traffic to the public internet through the internet gateway
 resource "aws_route" "internet" {
   count = var.create && length(local.public_subnets) > 0 ? 1 : 0
 
