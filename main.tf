@@ -54,7 +54,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 # Prepare local subnet data structure
 locals {
   public_subnets = { for subnet in var.public_subnets :
-    replace(replace(subnet.cidr_block, ".", "-"), "/", "-") => {
+    replace(subnet.cidr_block, "/[./]/", "-") => {
       cidr_block                      = subnet.cidr_block
       ipv6_cidr_block                 = try(subnet.ipv6_cidr_block, null)
       availability_zone               = try(subnet.availability_zone, null)
