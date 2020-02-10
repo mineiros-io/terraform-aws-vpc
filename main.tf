@@ -36,19 +36,13 @@ resource "aws_vpc" "vpc" {
   )
 }
 
-locals {
-  vpc_id                = join("", aws_vpc.vpc.*.id)
-  public_route_table_id = join("", aws_route_table.public.*.id)
-  internet_gateway_id   = join("", aws_internet_gateway.internet_gateway.*.id)
-}
-
 # Create an Internet Gateway for the VPC
 # An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication
 # between instances in your VPC and the internet.
 resource "aws_internet_gateway" "internet_gateway" {
   count = var.create ? 1 : 0
 
-  vpc_id = local.vpc_id
+  vpc_id = aws_vpc.vpc[0].id
 
   tags = merge(
     { Name = var.vpc_name },
@@ -79,7 +73,7 @@ locals {
 resource "aws_subnet" "public" {
   for_each = var.create ? local.public_subnets : {}
 
-  vpc_id                          = local.vpc_id
+  vpc_id                          = aws_vpc.vpc[0].id
   cidr_block                      = each.value.cidr_block
   ipv6_cidr_block                 = each.value.ipv6_cidr_block
   availability_zone               = each.value.availability_zone
@@ -100,7 +94,7 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   count = var.create && length(local.public_subnets) > 0 ? 1 : 0
 
-  vpc_id = local.vpc_id
+  vpc_id = aws_vpc.vpc[0].id
   tags = merge(
     { Name = "${var.vpc_name}-public-subnet-route-table" },
     var.public_route_table_tags,
@@ -113,9 +107,9 @@ resource "aws_route_table" "public" {
 resource "aws_route" "internet" {
   count = var.create && length(local.public_subnets) > 0 ? 1 : 0
 
-  route_table_id         = local.public_route_table_id
+  route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = local.internet_gateway_id
+  gateway_id             = aws_internet_gateway.internet_gateway[0].id
 
   # Workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/338
   timeouts {
@@ -128,7 +122,7 @@ resource "aws_route_table_association" "public" {
   for_each = var.create ? aws_subnet.public : {}
 
   subnet_id      = each.value.id
-  route_table_id = local.public_route_table_id
+  route_table_id = aws_route_table.public[0].id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
