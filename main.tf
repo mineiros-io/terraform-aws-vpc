@@ -59,11 +59,14 @@ resource "aws_internet_gateway" "internet_gateway" {
 
 # Prepare local subnet data structure
 locals {
-  public_subnets = {
-    for subnet in var.public_subnets :
+  public_subnets = { for subnet in var.public_subnets :
     replace(replace(subnet.cidr_block, ".", "-"), "/", "-") => {
-      availability_zone = subnet.availability_zone
-      cidr_block        = subnet.cidr_block # toDo: calculate CIDR Block dynamically ?
+      cidr_block                      = subnet.cidr_block
+      ipv6_cidr_block                 = try(subnet.ipv6_cidr_block, null)
+      availability_zone               = try(subnet.availability_zone, null)
+      availability_zone_id            = try(subnet.availability_zone_id, null)
+      map_public_ip_on_launch         = try(subnet.map_public_ip_on_launch, false)
+      assign_ipv6_address_on_creation = try(subnet.assign_ipv6_address_on_creation, false)
       nat_gateway = {
         enabled       = try(subnet.nat_gateway.enabled, false)
         custom_eip_id = try(subnet.nat_gateway.custom_eip_id, null)
@@ -76,13 +79,16 @@ locals {
 resource "aws_subnet" "public" {
   for_each = var.create ? local.public_subnets : {}
 
-  vpc_id                  = local.vpc_id
-  availability_zone       = each.value.availability_zone
-  cidr_block              = each.value.cidr_block
-  map_public_ip_on_launch = var.map_public_ip_on_launch
+  vpc_id                          = local.vpc_id
+  cidr_block                      = each.value.cidr_block
+  ipv6_cidr_block                 = each.value.ipv6_cidr_block
+  availability_zone               = each.value.availability_zone
+  availability_zone_id            = each.value.availability_zone_id
+  map_public_ip_on_launch         = each.value.map_public_ip_on_launch
+  assign_ipv6_address_on_creation = each.value.assign_ipv6_address_on_creation
 
   tags = merge(
-    { Name = "${var.vpc_name}-public-subnet-${each.value.availability_zone}-${each.key}" },
+    { Name = "${var.vpc_name}-public-subnet-${each.key}" },
     var.public_subnet_tags,
     var.tags
   )

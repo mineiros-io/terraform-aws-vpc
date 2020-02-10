@@ -84,12 +84,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "map_public_ip_on_launch" {
-  description = "Specify true to indicate that instances launched into the public subnet should be assigned a public IP address (versus a private IP address)"
-  type        = bool
-  default     = false
-}
-
 //variable "public_subnets" {
 //  description = "A map of public subnets to create for this VPC."
 //  type        = map(string)
