@@ -63,14 +63,13 @@ locals {
     for subnet in var.public_subnets :
     replace(replace(subnet.cidr_block, ".", "-"), "/", "-") => {
       availability_zone = subnet.availability_zone
-      cidr_block        = subnet.cidr_block
+      cidr_block        = subnet.cidr_block # toDo: calculate CIDR Block dynamically ?
       nat_gateway = {
         enabled       = try(subnet.nat_gateway.enabled, false)
         custom_eip_id = try(subnet.nat_gateway.custom_eip_id, null)
       }
     }
   }
-
 }
 
 # Creates a range of public subnets
