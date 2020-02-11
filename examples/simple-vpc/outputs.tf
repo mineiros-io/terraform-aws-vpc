@@ -1,3 +1,7 @@
+output "all" {
+  value = module.vpc
+}
+
 output "vpc" {
   value = module.vpc.full_vpc
 }

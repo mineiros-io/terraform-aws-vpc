@@ -1,11 +1,12 @@
 module "vpc" {
   source = "../.."
 
-  create                 = true
+  create = false
+
   vpc_name               = "Test"
   cidr_block             = "10.0.0.0/16"
   enable_nat             = true
-  create_single_nat_only = false
+  create_single_nat_only = true
 
   public_subnets = [
     {

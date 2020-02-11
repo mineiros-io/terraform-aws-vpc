@@ -59,12 +59,14 @@ resource "aws_route_table" "private" {
 
 # Create a route for outbound Internet traffic.
 resource "aws_route" "nat" {
-  # toDo: we still have an problem here that if there is no nat gateway in an az for the private subnet the route won't be created
   for_each = var.create && var.enable_nat && var.allow_private_subnets_internet_access ? aws_subnet.private : {}
 
   route_table_id         = aws_route_table.private[each.key].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = var.create_single_nat_only ? aws_nat_gateway.nat[element(keys(local.nat_gateways), 0)].id : try(aws_nat_gateway.nat[each.value.availability_zone].id, aws_nat_gateway.nat[element(keys(local.nat_gateways), 0)].id)
+  nat_gateway_id = var.create_single_nat_only ? aws_nat_gateway.nat[element(keys(local.nat_gateways), 0)].id : try(
+    aws_nat_gateway.nat[each.value.availability_zone].id,
+    aws_nat_gateway.nat[element(keys(local.nat_gateways), 0)].id
+  )
 
 
   depends_on = [
