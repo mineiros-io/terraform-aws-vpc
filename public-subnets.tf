@@ -39,7 +39,7 @@ resource "aws_subnet" "public" {
   )
 }
 
-# Create a Route Table for public subnets
+# Create a single Route Table for public subnets
 # - This routes all public traffic through the Internet gateway
 # - All traffic to endpoints within the VPC won't hit the public internet
 resource "aws_route_table" "public" {

@@ -36,6 +36,8 @@ resource "aws_eip" "nat" {
 
 # Create the NAT Gateways
 # The quantity of created NAT Gateways should be chosen carefully, because each NAT Gateway produces costs 24/7
+# ToDo: MAPPING NAT GATEWAY - PRIVATE SUBNETS
+
 resource "aws_nat_gateway" "nat" {
   for_each = var.create && var.enable_nat_gateway ? local.nat_gateways : {}
 

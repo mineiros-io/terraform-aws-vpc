@@ -130,6 +130,11 @@ variable "private_subnets" {
   type        = list(map(string))
 }
 
+variable "private_persistence_subnets" {
+  description = "A map of private persistence subnets to create for this VPC."
+  type        = list(map(string))
+}
+
 variable "tags" {
   description = "A map of tags to apply to all created resources."
   type        = map(string)

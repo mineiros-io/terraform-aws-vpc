@@ -43,7 +43,7 @@ resource "aws_subnet" "private" {
 # Note that we don't need to specify any routing rules because our HA NAT Instance will automatically update
 # the Route Table upon booting.
 resource "aws_route_table" "private" {
-  count = var.create && length(local.private_subnets) > 0 ? 1 : 0
+  for_each = aws_subnet.private
 
   vpc_id = aws_vpc.vpc[0].id
 
@@ -51,7 +51,7 @@ resource "aws_route_table" "private" {
   # propagating_vgws
 
   tags = merge(
-    { Name = "${var.vpc_name}-private-${count.index}" },
+    { Name = "${var.vpc_name}-private-${each.key}" },
     var.private_route_table_tags,
     var.tags
   )
@@ -59,11 +59,9 @@ resource "aws_route_table" "private" {
 
 # Create a route for outbound Internet traffic.
 resource "aws_route" "nat" {
-  for_each = var.create && var.enable_nat_gateway && var.allow_private_subnets_internet_access ? {
-    for id, nat in aws_nat_gateway.nat : id => nat
-  } : {}
+  for_each = var.create && var.enable_nat_gateway && var.allow_private_subnets_internet_access ? aws_nat_gateway.nat : {}
 
-  route_table_id         = aws_route_table.private[0].id
+  route_table_id         = aws_route_table.private[each.key].id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = each.value.id
 
@@ -83,5 +81,5 @@ resource "aws_route_table_association" "private" {
   for_each = var.create ? aws_subnet.private : {}
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.private[0].id
+  route_table_id = aws_route_table.private[each.key].id
 }

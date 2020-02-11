@@ -39,6 +39,17 @@ module "vpc" {
     }
   ]
 
+  private_persistence_subnets = [
+    {
+      availability_zone = "us-east-1a",
+      cidr_block        = "10.0.144.0/21",
+    },
+    {
+      availability_zone = "us-east-1b",
+      cidr_block        = "10.0.160.0/21",
+    }
+  ]
+
   tags = {
     "Bob" = "Alice"
   }
