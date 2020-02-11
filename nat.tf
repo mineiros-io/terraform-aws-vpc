@@ -15,18 +15,20 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 locals {
-  subnet_keys_list = [
-    for id, _subnet in local.public_subnets : id
-  ]
+  # Create a grouped map with availability zone as key and a list of cidr blocks as value
+  azs_public_subnets_map = {
+    for cidr, subnet in aws_subnet.public : subnet.availability_zone => cidr...
+  }
 
+  # Create a map with availability zones as keys and cidr blocks of public subnets as values
   nat_gateways = var.create && var.create_single_nat_only == false ? {
-    for id, subnet in local.public_subnets : id => subnet.cidr_block
-  } : map(local.subnet_keys_list[0], local.subnet_keys_list[0])
+    for az, cidrs in local.azs_public_subnets_map : az => replace(cidrs[0], "/[./]/", "-")
+  } : try(map(element(keys(local.azs_public_subnets_map), 0), local.azs_public_subnets_map[element(keys(local.azs_public_subnets_map), 0)][0]), {})
 }
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
-  for_each = var.create && var.enable_nat_gateway ? local.nat_gateways : {}
+  for_each = var.create && var.enable_nat ? local.nat_gateways : {}
 
   vpc  = true
   tags = var.tags
@@ -36,13 +38,11 @@ resource "aws_eip" "nat" {
 
 # Create the NAT Gateways
 # The quantity of created NAT Gateways should be chosen carefully, because each NAT Gateway produces costs 24/7
-# ToDo: MAPPING NAT GATEWAY - PRIVATE SUBNETS
-
 resource "aws_nat_gateway" "nat" {
-  for_each = var.create && var.enable_nat_gateway ? local.nat_gateways : {}
+  for_each = var.create && var.enable_nat ? local.nat_gateways : {}
 
   allocation_id = aws_eip.nat[each.key].id
-  subnet_id     = aws_subnet.public[each.key].id
+  subnet_id     = aws_subnet.public[each.value].id
 
   tags = merge(
     { Name = "${var.vpc_name}-${each.key}-nat-gateway" },

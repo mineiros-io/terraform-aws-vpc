@@ -84,7 +84,7 @@ variable "enable_dns_hostnames" {
   default     = false
 }
 
-variable "enable_nat_gateway" {
+variable "enable_nat" {
   description = "Whether or not to create the NAT Gateways."
   type        = bool
   default     = true
