@@ -42,10 +42,22 @@ variable "assign_generated_ipv6_cidr_block" {
   default     = false
 }
 
+variable "allow_private_subnets_internet_access" {
+  description = "Whether or not to grant resoures inside the private subnets access to the public internet via NAT Gateways."
+  type        = bool
+  default     = true
+}
+
 variable "create" {
   description = "Whether or not if the VPC and its should be created."
   type        = bool
   default     = true
+}
+
+variable "create_single_nat_only" {
+  description = "Whether or not to only create a single NAT Gateway. This is recommended for dev, staging and testing environments because NAT Gateways produce costs."
+  type        = bool
+  default     = false
 }
 
 variable "enable_classiclink" {
@@ -72,6 +84,12 @@ variable "enable_dns_hostnames" {
   default     = false
 }
 
+variable "enable_nat_gateway" {
+  description = "Whether or not to create the NAT Gateways."
+  type        = bool
+  default     = true
+}
+
 variable "instance_tenancy" {
   description = "A tenancy option for instances launched into the VPC."
   type        = string
@@ -84,23 +102,32 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-//variable "public_subnets" {
-//  description = "A map of public subnets to create for this VPC."
-//  type        = map(string)
-//
-//  # Example:
-//  #
-//  # public_subnets = {
-//  #   "10.2.80.0/21"  = "us-east-1a",
-//  #   "10.2.96.0/21"  = "us-east-1a",
-//  #   "10.2.112.0/21" = "us-east-1b"
-//  # }
-//  default = {}
-//}
-
 variable "public_subnets" {
   description = "A map of public subnets to create for this VPC."
-  type        = any
+  //  type        = list(map(string))
+  type = any
+
+  # Example:
+  #
+  # public_subnets = [
+  #   {
+  #     availability_zone = "us-east-1a",
+  #     cidr_block        = "10.0.64.0/21",
+  #   },
+  #   {
+  #     availability_zone = "us-east-1a",
+  #     cidr_block        = "10.0.80.0/21",
+  #   },
+  #   {
+  #     availability_zone = "us-east-1b",
+  #     cidr_block        = "10.0.96.0/21",
+  #   }
+  # ]
+}
+
+variable "private_subnets" {
+  description = "A map of private subnets to create for this VPC."
+  type        = list(map(string))
 }
 
 variable "tags" {
@@ -151,8 +178,32 @@ variable "public_subnet_tags" {
   default = {}
 }
 
+variable "private_subnet_tags" {
+  description = "A map of tags to apply to the created Public Subnets."
+  type        = map(string)
+
+  # Example:
+  #
+  # tags = {
+  #   "CreatedAt" = "2020-02-07"
+  # }
+  default = {}
+}
+
 variable "public_route_table_tags" {
   description = "A map of tags to apply to the created Public Route Table."
+  type        = map(string)
+
+  # Example:
+  #
+  # tags = {
+  #   "CreatedAt" = "2020-02-07"
+  # }
+  default = {}
+}
+
+variable "private_route_table_tags" {
+  description = "A map of tags to apply to the created Private Route Table."
   type        = map(string)
 
   # Example:
