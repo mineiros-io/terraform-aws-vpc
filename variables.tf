@@ -48,8 +48,8 @@ variable "allow_private_subnets_internet_access" {
   default     = true
 }
 
-variable "allow_private_persistence_subnets_internet_access" {
-  description = "Whether or not to grant resoures inside the private persistence subnets access to the public internet via NAT Gateways."
+variable "allow_intra_subnets_internet_access" {
+  description = "Whether or not to grant resoures inside the intra subnets access to the public internet via NAT Gateways."
   type        = bool
   default     = false
 }
@@ -138,8 +138,8 @@ variable "private_subnets" {
   default     = []
 }
 
-variable "private_persistence_subnets" {
-  description = "A map of private persistence subnets to create for this VPC."
+variable "intra_subnets" {
+  description = "A map of private intra subnets to create for this VPC."
   type        = list(map(string))
   default     = []
 }
@@ -216,8 +216,8 @@ variable "private_subnet_tags" {
   default = {}
 }
 
-variable "private_persistence_subnet_tags" {
-  description = "A map of tags to apply to the created Private Persistence Subnets."
+variable "intra_subnet_tags" {
+  description = "A map of tags to apply to the created Intra Subnets."
   type        = map(string)
 
   # Example:
@@ -252,8 +252,8 @@ variable "private_route_table_tags" {
   default = {}
 }
 
-variable "private_persistence_route_table_tags" {
-  description = "A map of tags to apply to the created Private Persistence Route Table."
+variable "intra_route_table_tags" {
+  description = "A map of tags to apply to the created Intra Route Table."
   type        = map(string)
 
   # Example:

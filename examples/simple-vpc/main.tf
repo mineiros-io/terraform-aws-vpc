@@ -38,7 +38,7 @@ module "vpc" {
     }
   ]
 
-  private_persistence_subnets = [
+  intra_subnets = [
     {
       availability_zone = "us-east-1a",
       cidr_block        = "10.0.160.0/21",

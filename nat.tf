@@ -51,7 +51,7 @@ locals {
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
-  for_each = var.create && var.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_private_persistence_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
+  for_each = var.create && var.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
 
   vpc = true
   tags = merge(
@@ -68,7 +68,7 @@ resource "aws_eip" "nat" {
 # - Create a single NAT Gateway inside the first defined public subnet
 # - Create a Nat Gateway in every first public subnet inside each availability zones
 resource "aws_nat_gateway" "nat" {
-  for_each = var.create && var.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_private_persistence_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
+  for_each = var.create && var.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
 
   allocation_id = aws_eip.nat[each.key].id
   subnet_id     = aws_subnet.public[each.value].id

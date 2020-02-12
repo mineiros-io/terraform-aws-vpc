@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# PRIVATE SUBNETS
+# PRIVATE SUBNETS - PRIVATE SUBNETS WITH NAT CONNECTIVITY ENABLED PER DEFAULT
 # ---------------------------------------------------------------------------------------------------------------------
 
 # Prepare local private_subnets data structure
@@ -68,7 +68,6 @@ resource "aws_route" "private_nat" {
     aws_nat_gateway.nat[each.value.availability_zone].id,
     aws_nat_gateway.nat[element(keys(local.nat_gateways_availability_zone_cidr_mapping), 0)].id
   )
-
 
   depends_on = [
     aws_internet_gateway.internet_gateway,
