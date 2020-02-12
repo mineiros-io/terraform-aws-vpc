@@ -43,7 +43,7 @@ resource "aws_subnet" "public" {
 # - This routes all public traffic through the Internet gateway
 # - All traffic to endpoints within the VPC won't hit the public internet
 resource "aws_route_table" "public" {
-  count = var.create && length(local.public_subnets) > 0 ? 1 : 0
+  count = length(aws_subnet.public) > 0 ? 1 : 0
 
   vpc_id = aws_vpc.vpc[0].id
   tags = merge(
@@ -55,7 +55,7 @@ resource "aws_route_table" "public" {
 
 # Route all traffic to the public internet through the internet gateway
 resource "aws_route" "internet" {
-  count = var.create && length(local.public_subnets) > 0 ? 1 : 0
+  count = length(aws_subnet.public) > 0 ? 1 : 0
 
   route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
@@ -69,7 +69,7 @@ resource "aws_route" "internet" {
 
 # Associate each public subnet with a public route table
 resource "aws_route_table_association" "public" {
-  for_each = var.create ? aws_subnet.public : {}
+  for_each = aws_subnet.public
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.public[0].id

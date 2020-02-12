@@ -39,7 +39,8 @@ resource "aws_vpc" "vpc" {
 # An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication
 # between instances in your VPC and the internet.
 resource "aws_internet_gateway" "internet_gateway" {
-  count = var.create ? 1 : 0
+  # we only need to start an internet gateway if we provision at least one subnet
+  count = var.create && length(aws_subnet.public) > 0 && length(aws_subnet.private) > 0 && length(aws_subnet.private_persistence) > 0 ? 1 : 0
 
   vpc_id = aws_vpc.vpc[0].id
 

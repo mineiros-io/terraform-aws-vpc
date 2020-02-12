@@ -48,6 +48,12 @@ variable "allow_private_subnets_internet_access" {
   default     = true
 }
 
+variable "allow_private_persistence_subnets_internet_access" {
+  description = "Whether or not to grant resoures inside the private persistence subnets access to the public internet via NAT Gateways."
+  type        = bool
+  default     = false
+}
+
 variable "create" {
   description = "Whether or not if the VPC and its should be created."
   type        = bool
@@ -105,7 +111,8 @@ variable "aws_region" {
 variable "public_subnets" {
   description = "A map of public subnets to create for this VPC."
   //  type        = list(map(string))
-  type = any
+  type    = any
+  default = []
 
   # Example:
   #
@@ -128,11 +135,13 @@ variable "public_subnets" {
 variable "private_subnets" {
   description = "A map of private subnets to create for this VPC."
   type        = list(map(string))
+  default     = []
 }
 
 variable "private_persistence_subnets" {
   description = "A map of private persistence subnets to create for this VPC."
   type        = list(map(string))
+  default     = []
 }
 
 variable "tags" {
@@ -196,7 +205,19 @@ variable "public_subnet_tags" {
 }
 
 variable "private_subnet_tags" {
-  description = "A map of tags to apply to the created Public Subnets."
+  description = "A map of tags to apply to the created Private Subnets."
+  type        = map(string)
+
+  # Example:
+  #
+  # tags = {
+  #   "CreatedAt" = "2020-02-07"
+  # }
+  default = {}
+}
+
+variable "private_persistence_subnet_tags" {
+  description = "A map of tags to apply to the created Private Persistence Subnets."
   type        = map(string)
 
   # Example:
@@ -221,6 +242,18 @@ variable "public_route_table_tags" {
 
 variable "private_route_table_tags" {
   description = "A map of tags to apply to the created Private Route Table."
+  type        = map(string)
+
+  # Example:
+  #
+  # tags = {
+  #   "CreatedAt" = "2020-02-07"
+  # }
+  default = {}
+}
+
+variable "private_persistence_route_table_tags" {
+  description = "A map of tags to apply to the created Private Persistence Route Table."
   type        = map(string)
 
   # Example:

@@ -28,7 +28,6 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch         = false
   assign_ipv6_address_on_creation = each.value.assign_ipv6_address_on_creation
 
-
   tags = merge(
     { Name = "${var.vpc_name}-private-subnet-${each.key}" },
     var.private_subnet_tags,
@@ -58,12 +57,14 @@ resource "aws_route_table" "private" {
 }
 
 # Create a route for outbound Internet traffic.
-resource "aws_route" "nat" {
-  for_each = var.create && var.enable_nat && var.allow_private_subnets_internet_access ? aws_subnet.private : {}
+resource "aws_route" "private_nat" {
+  for_each = var.enable_nat && var.allow_private_subnets_internet_access ? aws_subnet.private : {}
 
   route_table_id         = aws_route_table.private[each.key].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id = var.create_single_nat_only ? aws_nat_gateway.nat[element(keys(local.nat_gateways_availability_zone_cidr_mapping), 0)].id : try(
+
+  nat_gateway_id = var.create_single_nat_only ? aws_nat_gateway.nat[element(keys(
+    local.nat_gateways_availability_zone_cidr_mapping), 0)].id : try(
     aws_nat_gateway.nat[each.value.availability_zone].id,
     aws_nat_gateway.nat[element(keys(local.nat_gateways_availability_zone_cidr_mapping), 0)].id
   )
@@ -82,7 +83,7 @@ resource "aws_route" "nat" {
 
 # Associate each private-app subnet with its respective route table
 resource "aws_route_table_association" "private" {
-  for_each = var.create ? aws_subnet.private : {}
+  for_each = aws_subnet.private
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private[each.key].id
