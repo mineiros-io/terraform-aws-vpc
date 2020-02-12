@@ -43,7 +43,8 @@ resource "aws_route_table" "intra" {
   for_each = aws_subnet.intra
   vpc_id   = aws_vpc.vpc[0].id
 
-  //  propagating_vgws = var.persistence_propagating_vgws
+  # toDO: to be implemented
+  # propagating_vgws
 
   tags = merge(
     { Name = "${var.vpc_name}-intra-${each.key}" },
