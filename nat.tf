@@ -23,15 +23,20 @@ locals {
   # Create a map with availability zones as keys and cidr blocks of public subnets as values
   nat_gateways = var.create && var.create_single_nat_only == false ? {
     for az, cidrs in local.azs_public_subnets_map : az => replace(cidrs[0], "/[./]/", "-")
-  } : try(map(element(keys(local.azs_public_subnets_map), 0), local.azs_public_subnets_map[element(keys(local.azs_public_subnets_map), 0)][0]), {})
+    } : try(map(element(keys(local.azs_public_subnets_map), 0),
+  local.azs_public_subnets_map[element(keys(local.azs_public_subnets_map), 0)][0]), {})
 }
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
   for_each = var.create && var.enable_nat ? local.nat_gateways : {}
 
-  vpc  = true
-  tags = var.tags
+  vpc = true
+  tags = merge(
+    { Name = "${var.vpc_name}-${each.key}-eip" },
+    var.eip_tags,
+    var.tags
+  )
 
   depends_on = [aws_internet_gateway.internet_gateway]
 }
@@ -46,8 +51,8 @@ resource "aws_nat_gateway" "nat" {
 
   tags = merge(
     { Name = "${var.vpc_name}-${each.key}-nat-gateway" },
-    var.tags,
     var.nat_gateway_tags,
+    var.tags,
   )
 
   # It's recommended to denote that the NAT Gateway depends on the Internet Gateway for the VPC in which the NAT

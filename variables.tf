@@ -147,6 +147,18 @@ variable "tags" {
   default = {}
 }
 
+variable "eip_tags" {
+  description = "A map of tags to apply to the created NAT Gateway Elastic IP Addresses."
+  type        = map(string)
+
+  # Example:
+  #
+  # tags = {
+  #   "CreatedAt" = "2020-02-07"
+  # }
+  default = {}
+}
+
 variable "endpoint_tags" {
   description = "A map of tags to apply to the created VPC Endpoints."
   type        = map(string)

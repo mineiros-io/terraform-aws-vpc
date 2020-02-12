@@ -7,6 +7,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # terraform-aws-vpc
-A [Terraform](https://www.terraform.io) 0.12 module to create a 
-[Virtual Private Cloud](https://aws.amazon.com/service/vpc) on
+A [Terraform](https://www.terraform.io) 0.12 module to create a
+[Virtual Private Cloud (VPC)](https://aws.amazon.com/service/vpc) on
 [Amazon Web Services (AWS)](https://aws.amazon.com/).

@@ -1,7 +1,7 @@
 module "vpc" {
   source = "../.."
 
-  create = false
+  create = true
 
   vpc_name               = "Test"
   cidr_block             = "10.0.0.0/16"
