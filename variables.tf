@@ -60,12 +60,6 @@ variable "create" {
   default     = true
 }
 
-variable "create_single_nat_gateway" {
-  description = "Whether or not to create a single NAT Gateway only. This is recommended for non-production environments because NAT Gateways produce costs."
-  type        = bool
-  default     = false
-}
-
 variable "enable_classiclink" {
   description = "Whether or not to enable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. Read more: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html"
   type        = bool
@@ -90,10 +84,14 @@ variable "enable_dns_hostnames" {
   default     = false
 }
 
-variable "enable_nat" {
-  description = "Whether or not to create the NAT Gateways."
-  type        = bool
-  default     = true
+variable "create_nat_gateways" {
+  description = "Set the mode for the NAT Gateways. Possible inputs are \"none\" ( create not NAT Gateways at all ), \"single\" ( create a single Nat Gateway inside the first defined Public Subnet) and \"one_per_az\" ( Create one Nat Gatway inside the first Public Subnet in each availability zone )."
+  type        = string
+
+  # Example:
+  # enable_nat = "single"
+  #
+  default = "single"
 }
 
 variable "instance_tenancy" {

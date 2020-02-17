@@ -55,12 +55,12 @@ resource "aws_route_table" "intra" {
 
 # Create a route for outbound Internet traffic.
 resource "aws_route" "intra_nat" {
-  for_each = var.enable_nat && var.allow_intra_subnets_internet_access ? aws_subnet.intra : {}
+  for_each = local.enable_nat && var.allow_intra_subnets_internet_access ? aws_subnet.intra : {}
 
   route_table_id         = aws_route_table.intra[each.key].id
   destination_cidr_block = "0.0.0.0/0"
 
-  nat_gateway_id = var.create_single_nat_gateway ? aws_nat_gateway.nat[element(keys(
+  nat_gateway_id = local.create_single_nat_gateway ? aws_nat_gateway.nat[element(keys(
     local.nat_gateways_availability_zone_cidr_mapping), 0)].id : try(
     aws_nat_gateway.nat[each.value.availability_zone].id,
     aws_nat_gateway.nat[element(keys(local.nat_gateways_availability_zone_cidr_mapping), 0)].id

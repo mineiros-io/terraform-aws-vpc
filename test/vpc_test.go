@@ -10,7 +10,7 @@ func TestVPC(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		// The path to where your Terraform code is located
-		TerraformDir: "../examples/simple-vpc",
+		TerraformDir: "../examples/complete-example",
 		Upgrade:      true,
 	}
 

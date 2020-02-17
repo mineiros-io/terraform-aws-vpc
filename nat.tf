@@ -15,6 +15,10 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 locals {
+  # Map create_nat_gateways variable ( string ) to booleans for convenience.
+  enable_nat                = var.create_nat_gateways == "none" ? false : true
+  create_single_nat_gateway = var.create_nat_gateways == "single" ? true : false
+
   # Create a grouped map with availability zone as key and a list of cidr blocks as value.
   # This map is used to group the CIDR blocks of our public subnets by availability zone. We use it to decide in which
   # public subnets we should deploy the NAT Gateways in.
@@ -43,7 +47,7 @@ locals {
   #   us-east-1b = "10-0-112-0-21",
   # }
   #
-  nat_gateways_availability_zone_cidr_mapping = var.create && var.create_single_nat_gateway == false ? {
+  nat_gateways_availability_zone_cidr_mapping = var.create && local.create_single_nat_gateway == false ? {
     for az, cidrs in local.azs_public_subnets_mapping : az => replace(cidrs[0], "/[./]/", "-")
     } : try(map(element(keys(local.azs_public_subnets_mapping), 0),
   local.azs_public_subnets_mapping[element(keys(local.azs_public_subnets_mapping), 0)][0]), {})
@@ -51,7 +55,7 @@ locals {
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
-  for_each = var.create && var.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
+  for_each = var.create && local.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
 
   vpc = true
   tags = merge(
@@ -68,7 +72,7 @@ resource "aws_eip" "nat" {
 # - Create a single NAT Gateway inside the first defined public subnet
 # - Create a Nat Gateway in every first public subnet inside each availability zones
 resource "aws_nat_gateway" "nat" {
-  for_each = var.create && var.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
+  for_each = var.create && local.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
 
   allocation_id = aws_eip.nat[each.key].id
   subnet_id     = aws_subnet.public[each.value].id

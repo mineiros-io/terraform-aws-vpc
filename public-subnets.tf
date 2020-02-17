@@ -12,10 +12,6 @@ locals {
       availability_zone_id            = try(subnet.availability_zone_id, null)
       map_public_ip_on_launch         = try(subnet.map_public_ip_on_launch, false)
       assign_ipv6_address_on_creation = try(subnet.assign_ipv6_address_on_creation, false)
-      nat_gateway = {
-        enabled       = try(subnet.nat_gateway.enabled, false)
-        custom_eip_id = try(subnet.nat_gateway.custom_eip_id, null)
-      }
     }
   }
 }
