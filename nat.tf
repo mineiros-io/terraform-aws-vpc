@@ -43,7 +43,7 @@ locals {
   #   us-east-1b = "10-0-112-0-21",
   # }
   #
-  nat_gateways_availability_zone_cidr_mapping = var.create && var.create_single_nat_only == false ? {
+  nat_gateways_availability_zone_cidr_mapping = var.create && var.create_single_nat_gateway == false ? {
     for az, cidrs in local.azs_public_subnets_mapping : az => replace(cidrs[0], "/[./]/", "-")
     } : try(map(element(keys(local.azs_public_subnets_mapping), 0),
   local.azs_public_subnets_mapping[element(keys(local.azs_public_subnets_mapping), 0)][0]), {})

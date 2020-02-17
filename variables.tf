@@ -60,7 +60,7 @@ variable "create" {
   default     = true
 }
 
-variable "create_single_nat_only" {
+variable "create_single_nat_gateway" {
   description = "Whether or not to create a single NAT Gateway only. This is recommended for non-production environments because NAT Gateways produce costs."
   type        = bool
   default     = false

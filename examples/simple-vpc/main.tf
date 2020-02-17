@@ -11,10 +11,10 @@ module "vpc" {
 
   create = true
 
-  vpc_name               = "Test"
-  cidr_block             = "10.0.0.0/16"
-  enable_nat             = true
-  create_single_nat_only = false
+  vpc_name                  = "Test"
+  cidr_block                = "10.0.0.0/16"
+  enable_nat                = true
+  create_single_nat_gateway = false
 
   public_subnets = [
     {

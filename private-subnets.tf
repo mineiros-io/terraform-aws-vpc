@@ -63,7 +63,7 @@ resource "aws_route" "private_nat" {
   route_table_id         = aws_route_table.private[each.key].id
   destination_cidr_block = "0.0.0.0/0"
 
-  nat_gateway_id = var.create_single_nat_only ? aws_nat_gateway.nat[element(keys(
+  nat_gateway_id = var.create_single_nat_gateway ? aws_nat_gateway.nat[element(keys(
     local.nat_gateways_availability_zone_cidr_mapping), 0)].id : try(
     aws_nat_gateway.nat[each.value.availability_zone].id,
     aws_nat_gateway.nat[element(keys(local.nat_gateways_availability_zone_cidr_mapping), 0)].id
