@@ -15,3 +15,17 @@ blocks:
         - name: "Pre Commit Hooks"
           commands:
             - make docker/pre-commit-hooks
+
+  - name: "Unit Tests"
+    task:
+      secrets:
+        - name: TERRAFORM_AWS_TESTACCOUNT_CREDENTIALS
+      prologue:
+        commands:
+          - checkout --use-cache
+      jobs:
+        - name: "Run Go Tests"
+          commands:
+            - make docker/unit-tests
+    skip:
+      when: "branch != 'master'"

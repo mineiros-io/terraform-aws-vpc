@@ -89,6 +89,7 @@ variable "create_nat_gateways" {
   type        = string
 
   # Example:
+  #
   # enable_nat = "single"
   #
   default = "single"

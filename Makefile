@@ -47,6 +47,6 @@ docker/unit-tests:
 		-e AWS_SECRET_ACCESS_KEY \
 		-v ${PWD}:${MOUNT_TARGET_DIRECTORY} \
 		${BUILD_TOOLS_DOCKER_IMAGE} \
-		go test -v -timeout 45m -parallel 128 test/terraform_aws_s3_bucket_test.go
+		go test -v -timeout 45m -parallel 128 test/vpc_test.go
 
-.PHONY: help docker/pre-commit-hooks docker/run-tests
+.PHONY: help docker/pre-commit-hooks docker/unit-tests
