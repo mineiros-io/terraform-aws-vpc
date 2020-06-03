@@ -1,9 +1,8 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# Create a VPC
+# DEPLOY AND MANAGE A VPC
 # ---------------------------------------------------------------------------------------------------------------------
 
-# Create the VPC
-#
+# ---------------------------------------------------------------------------------------------------------------------
 # When you create a VPC, we recommend that you specify a CIDR block (of /16 or smaller) from the private IPv4 address
 # ranges as specified in RFC 1918 (http://www.faqs.org/rfcs/rfc1918.html):
 # - 10.0.0.0 - 10.255.255.255 (10/8 prefix)
@@ -16,7 +15,8 @@
 # - 10.0.0.0: Network address.
 # - 10.0.0.1: Reserved by AWS for the VPC router.
 # - 10.0.0.2: Reserved by AWS. The IP address of the DNS server is the base of the VPC network range plus two.
-#
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "aws_vpc" "vpc" {
   count = var.create ? 1 : 0
 
