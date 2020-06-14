@@ -19,7 +19,7 @@ locals {
 }
 
 resource "aws_subnet" "intra" {
-  for_each = var.create ? local.intra_subnets : {}
+  for_each = var.module_enabled ? local.intra_subnets : {}
 
   vpc_id                          = aws_vpc.vpc[0].id
   cidr_block                      = each.value.cidr_block
@@ -34,6 +34,8 @@ resource "aws_subnet" "intra" {
     var.intra_subnet_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Create a Route Table for each intra subnet
@@ -51,6 +53,8 @@ resource "aws_route_table" "intra" {
     var.intra_route_table_tags,
     var.tags,
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Create a route for outbound Internet traffic.
@@ -69,7 +73,9 @@ resource "aws_route" "intra_nat" {
   depends_on = [
     aws_internet_gateway.internet_gateway,
     aws_route_table.intra,
+    var.module_depends_on,
   ]
+
 
   # Workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/338
   timeouts {
@@ -83,4 +89,6 @@ resource "aws_route_table_association" "intra" {
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.intra[each.key].id
+
+  depends_on = [var.module_depends_on]
 }

@@ -18,7 +18,7 @@ locals {
 
 # Creates a range of public subnets
 resource "aws_subnet" "public" {
-  for_each = var.create ? local.public_subnets : {}
+  for_each = var.module_enabled ? local.public_subnets : {}
 
   vpc_id                          = aws_vpc.vpc[0].id
   cidr_block                      = each.value.cidr_block
@@ -33,6 +33,8 @@ resource "aws_subnet" "public" {
     var.public_subnet_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Create a single Route Table for public subnets
@@ -47,6 +49,8 @@ resource "aws_route_table" "public" {
     var.public_route_table_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Route all traffic to the public internet through the internet gateway
@@ -61,6 +65,8 @@ resource "aws_route" "internet" {
   timeouts {
     create = "5m"
   }
+
+  depends_on = [var.module_depends_on]
 }
 
 # Associate each public subnet with a public route table
@@ -69,4 +75,6 @@ resource "aws_route_table_association" "public" {
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.public[0].id
+
+  depends_on = [var.module_depends_on]
 }

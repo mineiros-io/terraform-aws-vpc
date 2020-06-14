@@ -54,12 +54,6 @@ variable "allow_intra_subnets_internet_access" {
   default     = false
 }
 
-variable "create" {
-  description = "Whether or not to create the VPC its associated resources."
-  type        = bool
-  default     = true
-}
-
 variable "enable_classiclink" {
   description = "Whether or not to enable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. Read more: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html"
   type        = bool
@@ -320,4 +314,22 @@ variable "vpc_tags" {
   #   Alice     = "Bob
   # }
   default = {}
+}
+
+# ------------------------------------------------------------------------------
+# MODULE CONFIGURATION PARAMETERS
+# These variables are used to configure the module.
+# See https://medium.com/mineiros/the-ultimate-guide-on-how-to-write-terraform-modules-part-1-81f86d31f024
+# ------------------------------------------------------------------------------
+
+variable "module_enabled" {
+  type        = bool
+  description = "(Optional) Whether to create resources within the module or not. Default is true."
+  default     = true
+}
+
+variable "module_depends_on" {
+  type        = list
+  description = "(Optional) A list of external resources the module depends_on. Default is []."
+  default     = []
 }

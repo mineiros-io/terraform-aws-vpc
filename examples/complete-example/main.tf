@@ -9,7 +9,7 @@ provider "aws" {
 module "vpc" {
   source = "../.."
 
-  create = true
+  module_enabled = true
 
   vpc_name            = "Test"
   cidr_block          = "10.0.0.0/16"

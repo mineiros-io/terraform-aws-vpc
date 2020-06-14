@@ -1,6 +1,6 @@
 output "create" {
   description = "Whether or not to create the VPC its associated resources."
-  value       = var.create
+  value       = var.module_enabled
 }
 
 output "vpc_id" {
