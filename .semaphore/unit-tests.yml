@@ -15,4 +15,4 @@ blocks:
       jobs:
         - name: "Run Go Tests"
           commands:
-            - make docker/unit-tests
+            - make test/unit-tests

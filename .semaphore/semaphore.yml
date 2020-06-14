@@ -14,7 +14,7 @@ blocks:
       jobs:
         - name: "Pre Commit Hooks"
           commands:
-            - make docker/pre-commit-hooks
+            - make test/pre-commit
 
 promotions:
   - name: "Unit Tests"
