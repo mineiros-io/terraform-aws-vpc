@@ -18,7 +18,7 @@ locals {
 
 # Create a private subnets per AZ for our "App" tier
 resource "aws_subnet" "private" {
-  for_each = var.create ? local.private_subnets : {}
+  for_each = var.module_enabled ? local.private_subnets : {}
 
   vpc_id                          = aws_vpc.vpc[0].id
   cidr_block                      = each.value.cidr_block
@@ -33,6 +33,8 @@ resource "aws_subnet" "private" {
     var.private_subnet_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Create a Route Table for each private subnet
@@ -54,6 +56,8 @@ resource "aws_route_table" "private" {
     var.private_route_table_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Create a route for outbound Internet traffic.
@@ -72,7 +76,9 @@ resource "aws_route" "private_nat" {
   depends_on = [
     aws_internet_gateway.internet_gateway,
     aws_route_table.private,
+    var.module_depends_on,
   ]
+
 
   # Workaround for https://github.com/terraform-providers/terraform-provider-aws/issues/338
   timeouts {
@@ -86,4 +92,6 @@ resource "aws_route_table_association" "private" {
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private[each.key].id
+
+  depends_on = [var.module_depends_on]
 }

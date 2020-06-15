@@ -18,7 +18,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_vpc" "vpc" {
-  count = var.create ? 1 : 0
+  count = var.module_enabled ? 1 : 0
 
   cidr_block                       = var.cidr_block
   instance_tenancy                 = var.instance_tenancy
@@ -33,6 +33,8 @@ resource "aws_vpc" "vpc" {
     var.vpc_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 # Create an Internet Gateway for the VPC
@@ -40,7 +42,7 @@ resource "aws_vpc" "vpc" {
 # between instances in your VPC and the internet.
 resource "aws_internet_gateway" "internet_gateway" {
   # we only need to start an internet gateway if we provision at least one subnet
-  count = var.create && length(aws_subnet.public) > 0 && length(aws_subnet.private) > 0 && length(aws_subnet.intra) > 0 ? 1 : 0
+  count = var.module_enabled && length(aws_subnet.public) > 0 && length(aws_subnet.private) > 0 && length(aws_subnet.intra) > 0 ? 1 : 0
 
   vpc_id = aws_vpc.vpc[0].id
 
@@ -49,4 +51,6 @@ resource "aws_internet_gateway" "internet_gateway" {
     var.internet_gateway_tags,
     var.tags
   )
+
+  depends_on = [var.module_depends_on]
 }

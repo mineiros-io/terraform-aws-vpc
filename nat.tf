@@ -47,7 +47,7 @@ locals {
   #   us-east-1b = "10-0-112-0-21",
   # }
   #
-  nat_gateways_availability_zone_cidr_mapping = var.create && local.create_single_nat_gateway == false ? {
+  nat_gateways_availability_zone_cidr_mapping = var.module_enabled && local.create_single_nat_gateway == false ? {
     for az, cidrs in local.azs_public_subnets_mapping : az => replace(cidrs[0], "/[./]/", "-")
     } : try(map(element(keys(local.azs_public_subnets_mapping), 0),
   local.azs_public_subnets_mapping[element(keys(local.azs_public_subnets_mapping), 0)][0]), {})
@@ -55,7 +55,7 @@ locals {
 
 # A NAT Gateway must be associated with an Elastic IP Address
 resource "aws_eip" "nat" {
-  for_each = var.create && local.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
+  for_each = var.module_enabled && local.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
 
   vpc = true
   tags = merge(
@@ -64,7 +64,10 @@ resource "aws_eip" "nat" {
     var.tags
   )
 
-  depends_on = [aws_internet_gateway.internet_gateway]
+  depends_on = [
+    aws_internet_gateway.internet_gateway,
+    var.module_depends_on,
+  ]
 }
 
 # Create the NAT Gateways
@@ -72,7 +75,7 @@ resource "aws_eip" "nat" {
 # - Create a single NAT Gateway inside the first defined public subnet
 # - Create a Nat Gateway in every first public subnet inside each availability zones
 resource "aws_nat_gateway" "nat" {
-  for_each = var.create && local.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
+  for_each = var.module_enabled && local.enable_nat && ! (! var.allow_private_subnets_internet_access && ! var.allow_intra_subnets_internet_access) ? local.nat_gateways_availability_zone_cidr_mapping : {}
 
   allocation_id = aws_eip.nat[each.key].id
   subnet_id     = aws_subnet.public[each.value].id
@@ -85,5 +88,8 @@ resource "aws_nat_gateway" "nat" {
 
   # It's recommended to denote that the NAT Gateway depends on the Internet Gateway for the VPC in which the NAT
   # Gateway's subnet is located. https://www.terraform.io/docs/providers/aws/r/nat_gateway.html
-  depends_on = [aws_internet_gateway.internet_gateway]
+  depends_on = [
+    aws_internet_gateway.internet_gateway,
+    var.module_depends_on,
+  ]
 }
