@@ -92,7 +92,7 @@ variable "create_nat_gateways" {
 variable "instance_tenancy" {
   description = "A tenancy option for instances launched into the VPC."
   type        = string
-  default     = "dedicated"
+  default     = "default"
 }
 
 variable "public_subnets" {
