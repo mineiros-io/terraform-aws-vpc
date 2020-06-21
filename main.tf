@@ -17,6 +17,14 @@
 # - 10.0.0.2: Reserved by AWS. The IP address of the DNS server is the base of the VPC network range plus two.
 # ---------------------------------------------------------------------------------------------------------------------
 
+data "aws_region" "region" {
+  count = var.module_enabled ? 1 : 0
+}
+
+locals {
+  region = try(data.aws_region.region[0].name, "")
+}
+
 resource "aws_vpc" "vpc" {
   count = var.module_enabled ? 1 : 0
 
@@ -30,26 +38,8 @@ resource "aws_vpc" "vpc" {
 
   tags = merge(
     { Name = var.vpc_name },
+    var.module_tags,
     var.vpc_tags,
-    var.tags
-  )
-
-  depends_on = [var.module_depends_on]
-}
-
-# Create an Internet Gateway for the VPC
-# An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication
-# between instances in your VPC and the internet.
-resource "aws_internet_gateway" "internet_gateway" {
-  # we only need to start an internet gateway if we provision at least one subnet
-  count = var.module_enabled && length(aws_subnet.public) > 0 && length(aws_subnet.private) > 0 && length(aws_subnet.intra) > 0 ? 1 : 0
-
-  vpc_id = aws_vpc.vpc[0].id
-
-  tags = merge(
-    { Name = var.vpc_name },
-    var.internet_gateway_tags,
-    var.tags
   )
 
   depends_on = [var.module_depends_on]

@@ -2,8 +2,8 @@
 # CREATE AN EXAMPLE VPC WITH SUBNETS, INTERNET- AND NAT GATEWAYS
 # ---------------------------------------------------------------------------------------------------------------------
 
-provider "aws" {
-  region = var.aws_region
+locals {
+  cidr_block = "10.0.0.0/16"
 }
 
 module "vpc" {
@@ -11,52 +11,64 @@ module "vpc" {
 
   module_enabled = true
 
-  vpc_name            = "Test"
-  cidr_block          = "10.0.0.0/16"
-  create_nat_gateways = "one_per_az"
+  vpc_name   = "main"
+  cidr_block = local.cidr_block
+  # nat_gateway_mode = "one_per_az" # (defaults to "single")
+  # nat_gateway_mode = "none" # (defaults to "single")
 
-  public_subnets = [
+  subnets = [
     {
-      availability_zone = "us-east-1a",
-      cidr_block        = "10.0.64.0/21",
+      group = "main"   # (default: default)
+      class = "public" # (default: private)
+
+      map_public_ip_on_launch         = true
+      assign_ipv6_address_on_creation = false
+
+      cidr_block = cidrsubnet(local.cidr_block, 4, 0) # (default: cidr_block of vpc)
+      newbits    = 4                                  # (default: 8)
+      netnums_by_az = {
+        a = [0]
+        b = [1]
+      }
+      routes = [
+      ]
+      tags = {
+      }
     },
     {
-      availability_zone = "us-east-1a",
-      cidr_block        = "10.0.80.0/21",
+      group = "main"
+      class = "private" # (default: private)
+
+      cidr_block = cidrsubnet(local.cidr_block, 4, 1) # (default: cidr_block of vpc)
+      newbits    = 4                                  # (default: 8)
+      netnums_by_az = {
+        a = [0]
+        b = [1]
+        c = [2]
+      }
     },
     {
-      availability_zone = "us-east-1b",
-      cidr_block        = "10.0.96.0/21",
-    }
+      group = "database"
+      class = "intra" # (default: private)
+
+      map_public_ip_on_launch         = true
+      assign_ipv6_address_on_creation = false
+
+      cidr_block = cidrsubnet(local.cidr_block, 4, 2) # (default: cidr_block of vpc)
+      newbits    = 4                                  # (default: 8)
+      netnums_by_az = {
+        a = [0]
+        b = [1]
+      }
+      routes = [
+      ]
+      tags = {
+      }
+    },
   ]
+}
 
-  private_subnets = [
-    {
-      availability_zone = "us-east-1a",
-      cidr_block        = "10.0.112.0/21",
-    },
-    {
-      availability_zone = "us-east-1b",
-      cidr_block        = "10.0.128.0/21",
-    },
-    {
-      availability_zone = "us-east-1c",
-      cidr_block        = "10.0.144.0/21",
-    }
-  ]
-
-  intra_subnets = [
-    {
-      availability_zone = "us-east-1a",
-      cidr_block        = "10.0.160.0/21",
-    },
-    {
-      availability_zone = "us-east-1b",
-      cidr_block        = "10.0.176.0/21",
-    }
-  ]
-
-  tags = {
-    "Bob" = "Alice"
-  }
+provider "aws" {
+  region  = var.aws_region
+  version = "~> 2.0"
 }
