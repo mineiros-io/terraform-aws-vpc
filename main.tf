@@ -28,7 +28,12 @@ locals {
 resource "aws_vpc" "vpc" {
   count = var.module_enabled ? 1 : 0
 
-  cidr_block                       = var.cidr_block
+  # We convert the cidr_block to its cannonical form because AWS would do it in the API anyway
+  # and we want to ensure this is not showing a constant change when planning.
+  # We will do the same for all created subnets.
+  # We will do the same for all created routes.
+  cidr_block = cidrsubnet(var.cidr_block, 0, 0)
+
   instance_tenancy                 = var.instance_tenancy
   enable_dns_support               = var.enable_dns_support
   enable_dns_hostnames             = var.enable_dns_hostnames

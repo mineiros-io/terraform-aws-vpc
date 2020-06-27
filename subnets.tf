@@ -56,11 +56,14 @@ resource "aws_subnet" "subnet" {
 
   vpc_id = aws_vpc.vpc[0].id
 
-  cidr_block              = each.value.cidr_block
+  # We convert the cidr_block to its cannonical form. This is actually not needed as we
+  # already calculate the cidr_block, but to be future proof we do it again anyway.
+  cidr_block = cidrsubnet(each.value.cidr_block, 0, 0)
+
   availability_zone       = each.value.availability_zone
   map_public_ip_on_launch = each.value.map_public_ip_on_launch
 
-  ipv6_cidr_block                 = try(each.value.ipv6_cidr_block, null)
+  ipv6_cidr_block                 = try(cidrsubnet(each.value.ipv6_cidr_block, 0, 0), null)
   assign_ipv6_address_on_creation = try(each.value.assign_ipv6_address_on_creation, null)
 
   tags = merge(
