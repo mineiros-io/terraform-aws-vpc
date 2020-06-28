@@ -16,7 +16,7 @@ locals {
     intra   = var.intra_subnet_tags
   }
 
-  # The following creates a list of subnets by constructing multi level lists and flattening them in the end.
+  # The following creates a list of subnets by constructing multi-level lists and flattening them in the end.
   subnets_tmp = flatten(
     [
       for subnet in var.subnets : [
