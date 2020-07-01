@@ -11,309 +11,141 @@
 # These variables must be set when using this module.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "vpc_name" {
-  description = "The name of the VPC"
-  type        = string
-}
-
-variable "cidr_block" {
-  description = "The CIDR block for the VPC. The permissible size of the block ranges between a /16 netmask and a /28 netmask. We advice you to use a CIDR block reserved for private address space as recommended in RFC 1918 http://www.faqs.org/rfcs/rfc1918.html."
-  type        = string
-
-  # VPCs can vary in size from 16 addresses (/28 netmask) to 65536 addresses (/16 netmask).
-  # See further information here:
-  # - Classless Inter-domain Routing (CIDR) RFC-4632 https://tools.ietf.org/html/rfc4632
-  # - AWS VPC Design https://aws.amazon.com/de/answers/networking/aws-single-vpc-design/
-  #
-  # Example:
-  # Create a VPC with up to to 65536 possible addresses (/16 netmask, 10.2.0.0 - 10.2.255.255).
-  # cidr_block = "10.2.0.0/16"
-  #
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL VARIABLES
 # These variables have defaults, but may be overridden.
 # ---------------------------------------------------------------------------------------------------------------------
 
+variable "cidr_block" {
+  description = "(Optional) The CIDR block for the VPC. The permissible size of the block ranges between a /16 netmask and a /28 netmask. We advice you to use a CIDR block reserved for private address space as recommended in RFC 1918 http://www.faqs.org/rfcs/rfc1918.html. Default is \"10.0.0.0/16\""
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "vpc_name" {
+  description = "(Optional) The name of the VPC. Default is \"main\"."
+  type        = string
+  default     = "main"
+}
+
 variable "assign_generated_ipv6_cidr_block" {
-  description = "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block."
-  type        = bool
-  default     = false
-}
-
-variable "allow_private_subnets_internet_access" {
-  description = "Whether or not to grant resoures inside the private subnets access to the public internet via NAT Gateways."
-  type        = bool
-  default     = true
-}
-
-variable "allow_intra_subnets_internet_access" {
-  description = "Whether or not to grant resoures inside the intra subnets access to the public internet via NAT Gateways."
+  description = "(Optional) Requests an AWS-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is false."
   type        = bool
   default     = false
 }
 
 variable "enable_classiclink" {
-  description = "Whether or not to enable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. Read more: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html"
+  description = "(Optional) Whether or not to enable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. Read more: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html. Default is false."
   type        = bool
   default     = false
 }
 
 variable "enable_classiclink_dns_support" {
-  description = "Whether or not to enable ClassicLink DNS Support for the VPC. Only valid in regions and accounts that support EC2 Classic."
+  description = "(Optional) Whether or not to enable ClassicLink DNS Support for the VPC. Only valid in regions and accounts that support EC2 Classic. Default is false."
   type        = bool
   default     = false
 }
 
 variable "enable_dns_support" {
-  description = "Whether or not to enable DNS support in the VPC."
+  description = "(Optional) Whether or not to enable DNS support in the VPC. Default is true."
   type        = bool
   default     = true
 }
 
 variable "enable_dns_hostnames" {
-  description = "Whether or not to enable DNS hostnames in the VPC."
+  description = "(Optional) Whether or not to enable DNS hostnames in the VPC. Default is false."
   type        = bool
   default     = false
 }
 
-variable "create_nat_gateways" {
-  description = "Set the mode for the NAT Gateways. Possible inputs are \"none\" ( create not NAT Gateways at all ), \"single\" ( create a single Nat Gateway inside the first defined Public Subnet) and \"one_per_az\" ( Create one Nat Gatway inside the first Public Subnet in each availability zone )."
-  type        = string
-
-  # Example:
-  #
-  # enable_nat = "single"
-  #
-  default = "single"
-}
-
 variable "instance_tenancy" {
-  description = "A tenancy option for instances launched into the VPC."
+  description = "(Optional) A tenancy option for instances launched into the VPC. Default is \"default\"."
   type        = string
   default     = "default"
 }
 
-variable "public_subnets" {
-  description = "A map of public subnets to create for this VPC."
-  type        = list(map(string))
-
-  # Example:
-  #
-  # public_subnets = [
-  #   {
-  #     availability_zone = "us-east-1a",
-  #     cidr_block        = "10.0.64.0/21",
-  #   },
-  #   {
-  #     availability_zone = "us-east-1b",
-  #     cidr_block        = "10.0.80.0/21",
-  #   },
-  #   {
-  #     availability_zone = "us-east-1c",
-  #     cidr_block        = "10.0.96.0/21",
-  #   }
-  # ]
-  default = []
+variable "subnets" {
+  description = "(Optional) List of subnet definitions. See README.md for details. Default is []."
+  type        = any
+  default     = []
 }
 
-variable "private_subnets" {
-  description = "A map of private subnets to create for this VPC."
-  type        = list(map(string))
-
-  # Example:
-  #
-  # private_subnets = [
-  #   {
-  #     availability_zone = "us-east-1a",
-  #     cidr_block        = "10.0.112.0/21",
-  #   },
-  #   {
-  #     availability_zone = "us-east-1b",
-  #     cidr_block        = "10.0.128.0/21",
-  #   },
-  #   {
-  #     availability_zone = "us-east-1c",
-  #     cidr_block        = "10.0.144.0/21",
-  #   }
-  # ]
-  default = []
-}
-
-variable "intra_subnets" {
-  description = "A map of private intra subnets to create for this VPC."
-  type        = list(map(string))
-
-  # Example:
-  #
-  # intra_subnets = [
-  #   {
-  #     availability_zone = "us-east-1a",
-  #     cidr_block        = "10.0.160.0/21",
-  #   },
-  #   {
-  #     availability_zone = "us-east-1b",
-  #     cidr_block        = "10.0.176.0/21",
-  #   }
-  # ]
-  default = []
-}
-
-variable "tags" {
-  description = "A map of tags to apply to all created resources that support tags."
-  type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+variable "nat_gateway_mode" {
+  description = "(Optional) Set the mode for the NAT Gateways. Possible inputs are \"none\" (create no NAT Gateways at all), \"single\" (create a single NAT Gateway inside the first defined Public Subnet) and \"one_per_az\" (create one NAT Gateway inside the first Public Subnet in each Availability Zone). Default is \"single\"."
+  type        = string
+  default     = "single"
 }
 
 variable "eip_tags" {
-  description = "A map of tags to apply to the created NAT Gateway Elastic IP Addresses."
+  description = "(Optional) A map of tags to apply to the created NAT Gateway Elastic IP Addresses. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
-}
-
-variable "endpoint_tags" {
-  description = "A map of tags to apply to the created VPC endpoints."
-  type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "internet_gateway_tags" {
-  description = "A map of tags to apply to the created Internet Gateway."
+  description = "(Optional) A map of tags to apply to the created Internet Gateway. Default is {}."
   type        = map(string)
+  default     = {}
+}
 
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+variable "subnet_tags" {
+  description = "(Optional) A map of tags to apply to the created Subnet. Default is {}."
+  type        = map(string)
+  default     = {}
 }
 
 variable "public_subnet_tags" {
-  description = "A map of tags to apply to the created public subnets."
+  description = "(Optional) A map of tags to apply to the created Public Subnets. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "private_subnet_tags" {
-  description = "A map of tags to apply to the created Private Subnets."
+  description = "(Optional) A map of tags to apply to the created Private Subnets. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "intra_subnet_tags" {
-  description = "A map of tags to apply to the created Intra Subnets."
+  description = "(Optional) A map of tags to apply to the created Intra Subnets. Default is {}."
   type        = map(string)
+  default     = {}
+}
 
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+variable "route_table_tags" {
+  description = "(Optional) A map of tags to apply to the created Public Route Table. Default is {}."
+  type        = map(string)
+  default     = {}
 }
 
 variable "public_route_table_tags" {
-  description = "A map of tags to apply to the created Public Route Table."
+  description = "(Optional) A map of tags to apply to the created Public Route Table. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "private_route_table_tags" {
-  description = "A map of tags to apply to the created Private Route Table."
+  description = "(Optional) A map of tags to apply to the created Private Route Table. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "intra_route_table_tags" {
-  description = "A map of tags to apply to the created Intra Route Table."
+  description = "(Optional) A map of tags to apply to the created Intra Route Table. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "nat_gateway_tags" {
-  description = "A map of tags to apply to the created NAT Gateways."
+  description = "(Optional) A map of tags to apply to the created NAT Gateways. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 variable "vpc_tags" {
-  description = "A map of tags to apply to the created VPC."
+  description = "(Optional) A map of tags to apply to the created VPC. Default is {}."
   type        = map(string)
-
-  # Example:
-  #
-  # tags = {
-  #   CreatedAt = "2020-02-07",
-  #   Alice     = "Bob
-  # }
-  default = {}
+  default     = {}
 }
 
 # ------------------------------------------------------------------------------
@@ -332,4 +164,10 @@ variable "module_depends_on" {
   type        = list
   description = "(Optional) A list of external resources the module depends_on. Default is []."
   default     = []
+}
+
+variable "module_tags" {
+  description = "(Optional) A map of default tags to apply to all resources created which support tags. Default is {}."
+  type        = map(string)
+  default     = {}
 }

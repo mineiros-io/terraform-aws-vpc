@@ -17,10 +17,23 @@
 # - 10.0.0.2: Reserved by AWS. The IP address of the DNS server is the base of the VPC network range plus two.
 # ---------------------------------------------------------------------------------------------------------------------
 
+data "aws_region" "region" {
+  count = var.module_enabled ? 1 : 0
+}
+
+locals {
+  region = try(data.aws_region.region[0].name, "")
+}
+
 resource "aws_vpc" "vpc" {
   count = var.module_enabled ? 1 : 0
 
-  cidr_block                       = var.cidr_block
+  # We convert the cidr_block to its cannonical form because AWS would do it in the API anyway
+  # and we want to ensure this is not showing a constant change when planning.
+  # We will do the same for all created subnets.
+  # We will do the same for all created routes.
+  cidr_block = cidrsubnet(var.cidr_block, 0, 0)
+
   instance_tenancy                 = var.instance_tenancy
   enable_dns_support               = var.enable_dns_support
   enable_dns_hostnames             = var.enable_dns_hostnames
@@ -30,26 +43,8 @@ resource "aws_vpc" "vpc" {
 
   tags = merge(
     { Name = var.vpc_name },
+    var.module_tags,
     var.vpc_tags,
-    var.tags
-  )
-
-  depends_on = [var.module_depends_on]
-}
-
-# Create an Internet Gateway for the VPC
-# An internet gateway is a horizontally scaled, redundant, and highly available VPC component that allows communication
-# between instances in your VPC and the internet.
-resource "aws_internet_gateway" "internet_gateway" {
-  # we only need to start an internet gateway if we provision at least one subnet
-  count = var.module_enabled && length(aws_subnet.public) > 0 && length(aws_subnet.private) > 0 && length(aws_subnet.intra) > 0 ? 1 : 0
-
-  vpc_id = aws_vpc.vpc[0].id
-
-  tags = merge(
-    { Name = var.vpc_name },
-    var.internet_gateway_tags,
-    var.tags
   )
 
   depends_on = [var.module_depends_on]
