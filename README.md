@@ -91,7 +91,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 - **`vpc_name`**: *(Optional `string`)*
 
-  The Name of the VPC. This will be used to tag resources with Names by default.
+  The name of the VPC. This will be used to tag resources with names by default.
   Default is `"main"`.
 
 - **`cidr_block`**: *(Optional `string`)*
