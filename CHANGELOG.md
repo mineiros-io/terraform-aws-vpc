@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add CHANGELOG.md, CONTIBUTING.md and test/README.md.
 - Add new input variables to support dynamic subnets.
 - Ensure cidr_blocks are align to network address.
-.
+- Document all input arguments and output attributes.
+
 ### Changed
 - THIS RELEASE IS BREAKING BACKWARD COMPATIBILITY.
 - Refactor the full module while keeping the same basic feature set.
