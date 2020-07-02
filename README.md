@@ -317,6 +317,98 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 The following attributes are exported by the module:
 
+- **`public_subnets_by_group`**
+
+  A map of lists of public subnets keyed by group. (`aws_subnet`)
+
+- **`public_route_table_ids_by_group`**
+
+  A map of lists of public route table IDs keyed by group.
+
+- **`public_subnet_ids_by_group`**
+
+  A map of lists of public subnet IDs keyed by group.
+
+- **`private_subnets_by_group`**
+
+  A map of lists of private subnets keyed by group. (`aws_subnet`)
+
+- **`private_route_table_ids_by_group`**
+
+  A map of lists of private route table IDs keyed by group.
+
+- **`private_subnet_ids_by_group`**
+
+  A map of lists of private subnet IDs keyed by group.
+
+- **`intra_subnets_by_group`**
+
+  A map of lists of intra aws_subnet keyed by group. (`aws_subnet`)
+
+- **`intra_route_table_ids_by_group`**
+
+  A map of lists of intra route table IDs keyed by group.
+
+- **`intra_subnet_ids_by_group`**
+
+  A map of lists of intra subnet IDs keyed by group.
+
+- **`vpc`**
+
+  The VPC. (aws_vpc)
+
+- **`intra_route_tables`**
+
+  A map of intra route tables keyed by group. (`aws_route_table`)
+
+- **`intra_route_table_associations`**
+
+  A map of intra route table associations keyed by the subnets CIDR Blocks. (`aws_route_table_association`)
+
+- **`eips`**
+
+  A map of Elastic IP Adresses (EIPs) keyed by availability zone. (`aws_eip`)
+
+- **`nat_gateways`**
+
+  A map of NAT gatweways keyed by availability zone. (`aws_nat_gateway`)
+
+- **`private_route_tables`**
+
+  A map of private route tables keyed by group. (`aws_route_table`)
+
+- **`private_route_table_associations`**
+
+  A map of private route table associations keyed by the subnets CIDR Blocks. (`aws_route_table_association`)
+
+- **`routes_to_nat_gateways`**
+
+  A map of routes to the NAT Gateways keyed by group. (`aws_route`)
+
+- **`internet_gateway`**
+
+  The Internet Gateway. (`aws_internet_gateway`)
+
+- **`public_route_tables`**
+
+  A map of public route tables keyed by group. (`aws_route_table`)
+
+- **`public_route_table_associations`**
+
+  A map of public route table associations keyed by the subnets CIDR Blocks. (`aws_route_table_association`)
+
+- **`routes_to_internet_gateway`**
+
+  A map of routes to the Internet Gateway keyed by group. (`aws_route`)
+
+- **`subnets`**
+
+  A map of subnets keyed by CIDR Blocks. (`aws_subnet`)
+
+- **`module_inputs`**
+
+  A map of all module arguments. Set to the provided values or calculated default values.
+
 - **`module_enabled`**
 
   Whether this module is enabled.
@@ -324,10 +416,6 @@ The following attributes are exported by the module:
 - **`module_tags`**
 
   The map of tags that are being applied to all created resources that accept tags.
-
-- **`output_1`**
-
-  The full `resource` object with all its attributes.
 
 ## External Documentation
 
