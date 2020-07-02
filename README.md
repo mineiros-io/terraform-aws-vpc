@@ -419,16 +419,17 @@ The following attributes are exported by the module:
 
 ## External Documentation
 
-- AWS Documentation IAM:
-  - Roles: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
-  - Policies: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html
-  - Instance Profile: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html
+- AWS Documentation VPC:
+  - https://aws.amazon.com/de/vpc/
 
 - Terraform AWS Provider Documentation:
-  - https://www.terraform.io/docs/providers/aws/r/iam_role.html
-  - https://www.terraform.io/docs/providers/aws/r/iam_role_policy.html
-  - https://www.terraform.io/docs/providers/aws/r/iam_role_policy_attachment.html
-  - https://www.terraform.io/docs/providers/aws/r/iam_instance_profile.html
+  - https://www.terraform.io/docs/providers/aws/r/vpc.html
+  - https://www.terraform.io/docs/providers/aws/r/subnet.html
+  - https://www.terraform.io/docs/providers/aws/r/internet_gateway.html
+  - https://www.terraform.io/docs/providers/aws/r/nat_gateway.html
+  - https://www.terraform.io/docs/providers/aws/r/route_table.html
+  - https://www.terraform.io/docs/providers/aws/r/route_table_association.html
+  - https://www.terraform.io/docs/providers/aws/r/route.html
 
 ## Module Versioning
 
