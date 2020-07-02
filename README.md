@@ -21,7 +21,6 @@ secure, and production-grade cloud infrastructure.
     - [Module Configuration](#module-configuration)
     - [Main Resource Configuration](#main-resource-configuration)
     - [Extended Resource Configuration](#extended-resource-configuration)
-  - [`some_block` Object Arguments](#some_block-object-arguments)
 - [Module Attributes Reference](#module-attributes-reference)
 - [External Documentation](#external-documentation)
 - [Module Versioning](#module-versioning)
@@ -34,14 +33,8 @@ secure, and production-grade cloud infrastructure.
 
 ## Module Features
 
-In contrast to the plain `terraform_resource` resource this module has better features.
-While all security features can be disabled as needed best practices
-are pre-configured.
-
-These are some of our custom features:
-
-- **Default Security Settings**:
-  secure by default by setting security to `true`, additional security can be added by setting some feature to `enabled`
+In contrast to the plain `aws_vpc` resource this module creates a full networking stack including subnets, gateways and basic routing.
+Additional features can be enabled on demand.
 
 - **Standard Module Features**:
   Cool Feature of the main resource, tags
@@ -64,7 +57,8 @@ Most basic usage just setting required arguments:
 
 ```hcl
 module "terraform-aws-vpc" {
-  source = "git@github.com:mineiros-io/terraform-aws-vpc.git?ref=v0.0.1"
+  source  = "mineiros-io/vpc/aws"
+  version = "0.1.0"
 }
 ```
 
@@ -81,11 +75,6 @@ See [variables.tf] and [examples/] for details and use-cases.
   Specifies whether resources in the module will be created.
   Default is `true`.
 
-- **`module_defaults`**: *(Optional `map(default_values)`)*
-
-  Default settings that overwrite the module and resource defaults in this module.
-  Default is `{}`.
-
 - **`module_tags`**: *(Optional `map(string)`)*
 
   A map of tags that will be applied to all created resources that accept tags. Tags defined with 'module_tags' can be
@@ -98,9 +87,231 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 #### Main Resource Configuration
 
+##### VPC
+
+- **`vpc_name`**: *(Required `string`)*
+
+  The Name of the VPC. This will be used to tag resources with Names by default.
+  Default is `"main"`.
+
+- **`cidr_block`**: *(Required `string`)*
+
+  The CIDR block for the VPC.
+  Default is `"10.0.0.0/16"`.
+
+- **`instance_tenancy`**: *(Optional `string`)*
+
+  A tenancy option for instances launched into the VPC
+  Default is `"default"`.
+
+- **`enable_dns_support`**: *(Optional `bool`)*
+
+  A boolean flag to enable/disable DNS support in the VPC.
+  Default is `true`.
+
+- **`enable_dns_hostnames`**: *(Optional `bool`)*
+
+  A boolean flag to enable/disable DNS hostnames in the VPC.
+  Default is `false`.
+
+- **`enable_classiclink`**: *(Optional `bool`)*
+
+  A boolean flag to enable/disable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. See the ClassicLink documentation for more information.
+  Default is `false`.
+
+- **`enable_classiclink_dns_support`**: *(Optional `bool`)*
+
+  A boolean flag to enable/disable ClassicLink DNS Support for the VPC. Only valid in regions and accounts that support EC2 Classic.
+  Default is `false`.
+
+- **`assign_generated_ipv6_cidr_block`**: *(Optional `bool`)*
+
+  Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block.
+  Default is `false`.
+
+- **`vpc_tags`**: *(Optional `string`)*
+
+  A map of tags to assign to the vpc resource.
+  Will be merged with `{ Name = var.vpc_name }` to set the name.
+  Default is `{}`.
+
 #### Extended Resource Configuration
 
-### [`some_block`](#main-resource-configuration) Object Arguments
+##### Subnets
+
+- **`subnets`**: *(Optional `list(subnets)`)*
+
+  A List of subnet objects that defined the subnet setup within the VPC.
+  Default is `[]`.
+
+  ```
+  subnets = [
+    {
+      group = "main"
+      class = "public"
+
+      map_public_ip_on_launch = true
+
+      cidr_block = cidrsubnet("10.0.0.0/16", 4, 0)
+      newbits    = 4
+      netnums_by_az = {
+        a = [0] # "10.0.0.0/24"
+        b = [1] # "10.0.1.0/24"
+      }
+      tags = {}
+    },
+    {
+      group = "main"
+      class = "private"
+
+      cidr_block = cidrsubnet(local.cidr_block, 4, 1)
+      newbits    = 4
+
+      netnums_by_az = {
+        a = [0] # "10.0.16.0/24"
+        b = [1] # "10.0.17.0/24"
+      }
+    },
+  ]
+  ```
+
+- **`subnet_tags`**: *(Optional `map(string)`)*
+
+  Tags applied to each subnet resource.
+  Default is `{}`.
+
+- **`public_subnet_tags`**: *(Optional `map(string)`)*
+
+  Tags applied to each public subnet.
+  Default is `{}`.
+
+- **`private_subnet_tags`**: *(Optional `map(string)`)*
+
+  Tags applied to each private subnet.
+  Default is `{}`.
+
+- **`intra_subnet_tags`**: *(Optional `map(string)`)*
+
+  Tags applied to each intra subnet.
+  Default is `{}`.
+
+###### [`subnets`](#extended-resource-configuration) Object Arguments
+
+- **`group`**: *(Optional `string`)*
+
+  A group name for the subnets. This can be any string. This information is used to group and tag resources within the subnets.
+  The combination of `group` and `class` needs to be unique over all subnets defined.
+  This can be changed at any time and will change the tags applied to resources by default.
+  Default is `"main"`.
+
+- **`class`**: *(Optional `string`)*
+
+  The class of the subnet. This can be `"public"`, `"private"`, or "`intra`".
+  This can be changed at any time and will change the routing of the subnet instead of recreating the subnet resource.
+
+  - "public" defines a set of subnets where deployed components are reachable via the public Internet.
+  - "private" defines a set of subnets where components are not publicly reachable but can reach the Internet.
+  - "intra" defines a set of subnets that have no connectivity to the public Internet.
+
+  Default is `"private"`.
+
+- **`map_public_ip_on_launch`**: *(Optional `bool`)*
+
+  Whether resources deployed into the subnet will be assigned a public IPv4 address when launched.
+  Default is `true` when subnet class is `public`, `false` otherwise.
+
+- **`cidr_block`**: *(Optional `string`)*
+
+  Define the base CIDR Block of the subnets and the parameters to calculate each CIDR Block.
+  Default is the CIDR Block of the VPC (`cidr_block`).
+
+- **`newbits`**: *(Optional `number`)*
+
+  How many bits should be added when calculating the subnets CIDR Blocks.
+  Default is `8`.
+
+- **`netnums_by_az`**: **(Required `map(list(number)`)**
+
+  A map of subnets keyed by availability zone suffix (a,b,c,d,e,f).
+  The numbers define the network number with in the CIDR Block.
+  See https://www.terraform.io/docs/configuration/functions/cidrsubnet.html for details on how this is calculated internally.
+
+  Note: When adjusting cidr_block or newbits you might also need to adjust the netnums.
+  The example shows how to deploy one subnet in availability zone "a" ("10.0.0.0/24") and one subnet in availability zone "b" ("10.0.1.0/24").
+
+  ```
+  cidr_block = "10.0.0.0/16"
+  newbits    = 8
+
+  netnums_by_az = {
+    a = [0] # "10.0.0.0/24"
+    b = [1] # "10.0.1.0/24"
+  }
+  ```
+
+- **`tags`**: *(Optional `map(string`)*
+
+  A map of tags that will be applied to each subnet in this group-class combination.
+  Those tags will be merged with a `Name` tag, `module_tags`, `subnet_tags` and tags for the subnet class `public_subnet_tags`, `private_subnet_tags`, or `intra_subnet_tags`.
+  Default is `{}`.
+
+##### Internet Gateway
+
+- **`internet_gateway_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to the created Internet Gateway.
+  An Internet Gateway is created if a public subnet is defined.
+  All public egress and ingress traffic of all public subnets will be routed through the same Internet Gateway.
+  Default is `{}`.
+
+##### NAT Gateways
+
+- **`nat_gateway_mode`**: *(Optional `string`)*
+
+  Set the mode for the NAT Gateways. NAT Gateways will only be created when private subnets are defined.
+  Each private subnet needs at least one configured public subnet in the same availability zone.
+  Each NAT gateway will be assigned an Elastic IP Address.
+  When changing the mode, NAT Gateways and Elastic IP Addresses will be created or destroyed.
+  All public egress traffic of all private subnets will be routed through the same set of NAT Gateways.
+  Possible modes are `none`, `single`, or `one_per_az`. Choose
+
+  - `none` to create no NAT Gateways at all (use for debugging only),
+  - `single` to create a single NAT Gateway inside the first defined Public Subnet, or
+  - `one_per_az` to create one NAT Gateway inside the first Public Subnet in each Availability Zone.
+
+  Default is `"single"`.
+
+- **`nat_gateway_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to the created NAT Gateways.
+  Default is `{}`.
+
+- **`eip_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to the created NAT Gateway Elastic IP Addresses.
+  Default is `{}`.
+
+##### Subnet Routing
+
+- **`route_table_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to all created Route Tables.
+  Default is `{}`.
+
+- **`public_route_table_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to the created Public Route Tables.
+  Default is `{}`.
+
+- **`private_route_table_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to the created Private Route Tables.
+  Default is `{}`.
+
+- **`intra_route_table_tags`**: *(Optional `map(string)`)*
+
+  A map of tags to apply to the created Intra Route Tables.
+  Default is `{}`.
 
 ## Module Attributes Reference
 
@@ -109,10 +320,6 @@ The following attributes are exported by the module:
 - **`module_enabled`**
 
   Whether this module is enabled.
-
-- **`module_defaults`**
-
-  Default settings that overwrite the module and resource defaults in this module.
 
 - **`module_tags`**
 
