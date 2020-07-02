@@ -101,7 +101,8 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 - **`instance_tenancy`**: *(Optional `string`)*
 
-  A tenancy option for instances launched into the VPC
+  A tenancy option for instances launched into the VPC.
+  Setting the tenancy to `dedicated` will create additional costs: See https://aws.amazon.com/ec2/pricing/dedicated-instances/ for details.
   Default is `"default"`.
 
 - **`enable_dns_support`**: *(Optional `bool`)*
@@ -265,6 +266,10 @@ See [variables.tf] and [examples/] for details and use-cases.
   Default is `{}`.
 
 ##### NAT Gateways
+
+> **A Note on pricing:** AWS charges for each provisioned NAT Gateway. Please see https://aws.amazon.com/vpc/pricing/ for details.
+> To save costs you can use `nat_gateway_mode` to define the number of NAT Gateways you want to deploy.
+> The best practice is to deploy one NAT Gateway per Availability Zone for higher reliability on production environments (`one_per_az`), while you can save some costs on staging and testing environments by deploying a single NAT Gateway (`single`).
 
 - **`nat_gateway_mode`**: *(Optional `string`)*
 
