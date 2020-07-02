@@ -16,16 +16,16 @@
 # These variables have defaults, but may be overridden.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "cidr_block" {
-  description = "(Optional) The CIDR block for the VPC. The permissible size of the block ranges between a /16 netmask and a /28 netmask. We advice you to use a CIDR block reserved for private address space as recommended in RFC 1918 http://www.faqs.org/rfcs/rfc1918.html. Default is \"10.0.0.0/16\""
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
 variable "vpc_name" {
   description = "(Optional) The name of the VPC. Default is \"main\"."
   type        = string
   default     = "main"
+}
+
+variable "cidr_block" {
+  description = "(Optional) The CIDR block for the VPC. The permissible size of the block ranges between a /16 netmask and a /28 netmask. We advice you to use a CIDR block reserved for private address space as recommended in RFC 1918 http://www.faqs.org/rfcs/rfc1918.html. Default is \"10.0.0.0/16\""
+  type        = string
+  default     = "10.0.0.0/16"
 }
 
 variable "assign_generated_ipv6_cidr_block" {
@@ -64,28 +64,16 @@ variable "instance_tenancy" {
   default     = "default"
 }
 
+variable "vpc_tags" {
+  description = "(Optional) A map of tags to apply to the created VPC. Default is {}."
+  type        = map(string)
+  default     = {}
+}
+
 variable "subnets" {
   description = "(Optional) List of subnet definitions. See README.md for details. Default is []."
   type        = any
   default     = []
-}
-
-variable "nat_gateway_mode" {
-  description = "(Optional) Set the mode for the NAT Gateways. Possible inputs are \"none\" (create no NAT Gateways at all), \"single\" (create a single NAT Gateway inside the first defined Public Subnet) and \"one_per_az\" (create one NAT Gateway inside the first Public Subnet in each Availability Zone). Default is \"single\"."
-  type        = string
-  default     = "single"
-}
-
-variable "eip_tags" {
-  description = "(Optional) A map of tags to apply to the created NAT Gateway Elastic IP Addresses. Default is {}."
-  type        = map(string)
-  default     = {}
-}
-
-variable "internet_gateway_tags" {
-  description = "(Optional) A map of tags to apply to the created Internet Gateway. Default is {}."
-  type        = map(string)
-  default     = {}
 }
 
 variable "subnet_tags" {
@@ -136,14 +124,26 @@ variable "intra_route_table_tags" {
   default     = {}
 }
 
+variable "nat_gateway_mode" {
+  description = "(Optional) Set the mode for the NAT Gateways. Possible inputs are \"none\" (create no NAT Gateways at all), \"single\" (create a single NAT Gateway inside the first defined Public Subnet) and \"one_per_az\" (create one NAT Gateway inside the first Public Subnet in each Availability Zone). Default is \"single\"."
+  type        = string
+  default     = "single"
+}
+
 variable "nat_gateway_tags" {
   description = "(Optional) A map of tags to apply to the created NAT Gateways. Default is {}."
   type        = map(string)
   default     = {}
 }
 
-variable "vpc_tags" {
-  description = "(Optional) A map of tags to apply to the created VPC. Default is {}."
+variable "eip_tags" {
+  description = "(Optional) A map of tags to apply to the created NAT Gateway Elastic IP Addresses. Default is {}."
+  type        = map(string)
+  default     = {}
+}
+
+variable "internet_gateway_tags" {
+  description = "(Optional) A map of tags to apply to the created Internet Gateway. Default is {}."
   type        = map(string)
   default     = {}
 }
