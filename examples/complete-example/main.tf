@@ -7,7 +7,8 @@ locals {
 }
 
 module "vpc" {
-  source = "../.."
+  source  = "mineiros-io/vpc/aws"
+  version = "~> 0.1.0"
 
   module_enabled = true
 
@@ -26,7 +27,7 @@ module "vpc" {
       group = "main"
 
       # Class of the subnet: Default is "private".
-      # - "public" defines a set of subnets where delployed components can be reachable via the public internet.
+      # - "public" defines a set of subnets where deployed components can be reachable via the public internet.
       # - "private" defines a set subnets where components are not publicly reachable but can reach the internet.
       # - "intra" (in development) defines a set of subnets that has not connectivity to the public internet.
       class = "public"
@@ -92,6 +93,6 @@ module "vpc" {
 }
 
 provider "aws" {
-  region  = var.aws_region
+  region  = "us-east-1"
   version = "~> 2.0"
 }
