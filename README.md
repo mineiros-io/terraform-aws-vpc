@@ -37,19 +37,31 @@ In contrast to the plain `aws_vpc` resource this module creates a full networkin
 Additional features can be enabled on demand.
 
 - **Standard Module Features**:
-  Cool Feature of the main resource, tags
+  All AWS VPC standard features are supported.
 
 - **Extended Module Features**:
-  Awesome Extended Feature of an additional related resource,
-  and another Cool Feature
+  Subnets,
+  Internet Gateway,
+  NAT Gateways,
+  Route Table,
+  and automatic Routes to the public internet by subnet class.
 
 - **Additional Features**:
-  a Cool Feature that is not actually a resource but a cool set up from us
+  Subnet classes supported out of the box are `public`, `private`, and `intra`,
+  **Subnet classes can be changed without the need of recreating the subnet resource,**
+  Subnets can be grouped by name and class,
+  NAT Gateways can be spawned in different modes including `single`, `one_per_az`, or `none`,
+  Subnet CIDR Blocks are calculated automatically by defining them as network numbers and not by CIDR Block strings.
 
 - *Features not yet implemented*:
-  Standard Features missing,
-  Extended Features planned,
-  Additional Features planned
+  VPC Peering support (coming next),
+  Cross Account VPC Peering support,
+  IPv6 support,
+  Subnet group support for AWS services like RDS and Redis,
+  VPC Endpoints support,
+  Custom Route support,
+  Network ACL support,
+  Secondary CIDR Block support.
 
 ## Getting Started
 
