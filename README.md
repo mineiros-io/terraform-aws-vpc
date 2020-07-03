@@ -140,7 +140,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 ##### Subnets
 
-- **`subnets`**: *(Optional `list(subnets)`)*
+- **[`subnets`](#subnet-object-arguments)**: *(Optional `list(subnet)`)*
 
   A List of subnet objects that defined the subnet setup within the VPC.
   Default is `[]`.
@@ -155,6 +155,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
       cidr_block = cidrsubnet("10.0.0.0/16", 4, 0)
       newbits    = 4
+
       netnums_by_az = {
         a = [0] # "10.0.0.0/24"
         b = [1] # "10.0.1.0/24"
@@ -164,6 +165,8 @@ See [variables.tf] and [examples/] for details and use-cases.
     {
       group = "main"
       class = "private"
+
+      map_public_ip_on_launch = false
 
       cidr_block = cidrsubnet(local.cidr_block, 4, 1)
       newbits    = 4
@@ -196,7 +199,7 @@ See [variables.tf] and [examples/] for details and use-cases.
   Tags applied to each intra subnet.
   Default is `{}`.
 
-###### [`subnets`](#extended-resource-configuration) Object Arguments
+###### [`subnet`](#subnets) Object Arguments
 
 - **`group`**: *(Optional `string`)*
 
