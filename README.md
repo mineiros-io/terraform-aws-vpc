@@ -337,6 +337,8 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 The following attributes are exported by the module:
 
+### Computed Attributes
+
 - **`public_subnets_by_group`**
 
   A map of lists of public subnets keyed by group. (`aws_subnet`)
@@ -373,9 +375,11 @@ The following attributes are exported by the module:
 
   A map of lists of intra subnet IDs keyed by group.
 
+### Full Resource Objects
+
 - **`vpc`**
 
-  The VPC. (aws_vpc)
+  The VPC. (`aws_vpc`)
 
 - **`intra_route_tables`**
 
@@ -424,6 +428,8 @@ The following attributes are exported by the module:
 - **`subnets`**
 
   A map of subnets keyed by CIDR Blocks. (`aws_subnet`)
+
+### Module Attributes
 
 - **`module_inputs`**
 
