@@ -175,30 +175,35 @@ output "subnets" {
 # ----------------------------------------------------------------------------------------------------------------------
 
 output "module_inputs" {
-  description = "A map of all module arguments."
+  description = "A map of all module arguments. Set to the provided values or calculated default values."
   value = {
-    cidr_block                       = var.cidr_block
     vpc_name                         = var.vpc_name
+    cidr_block                       = var.cidr_block
     assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
     enable_classiclink               = var.enable_classiclink
     enable_classiclink_dns_support   = var.enable_classiclink_dns_support
     enable_dns_support               = var.enable_dns_support
     enable_dns_hostnames             = var.enable_dns_hostnames
     instance_tenancy                 = var.instance_tenancy
-    subnets                          = var.subnets
-    nat_gateway_mode                 = var.nat_gateway_mode
-    eip_tags                         = var.eip_tags
-    internet_gateway_tags            = var.internet_gateway_tags
-    subnet_tags                      = var.subnet_tags
-    public_subnet_tags               = var.public_subnet_tags
-    private_subnet_tags              = var.private_subnet_tags
-    intra_subnet_tags                = var.intra_subnet_tags
-    route_table_tags                 = var.route_table_tags
-    public_route_table_tags          = var.public_route_table_tags
-    private_route_table_tags         = var.private_route_table_tags
-    intra_route_table_tags           = var.intra_route_table_tags
-    nat_gateway_tags                 = var.nat_gateway_tags
-    vpc_tags                         = var.vpc_tags
+
+    subnets = var.subnets
+
+    nat_gateway_mode = var.nat_gateway_mode
+
+    vpc_tags              = merge(var.module_tags, var.vpc_tags)
+    internet_gateway_tags = merge(var.module_tags, var.internet_gateway_tags)
+    eip_tags              = merge(var.module_tags, var.eip_tags)
+    nat_gateway_tags      = merge(var.module_tags, var.nat_gateway_tags)
+
+    subnet_tags         = merge(var.module_tags, var.subnet_tags)
+    public_subnet_tags  = merge(var.module_tags, var.subnet_tags, var.public_subnet_tags)
+    private_subnet_tags = merge(var.module_tags, var.subnet_tags, var.private_subnet_tags)
+    intra_subnet_tags   = merge(var.module_tags, var.subnet_tags, var.intra_subnet_tags)
+
+    route_table_tags         = merge(var.module_tags, var.route_table_tags)
+    public_route_table_tags  = merge(var.module_tags, var.route_table_tags, var.public_route_table_tags)
+    private_route_table_tags = merge(var.module_tags, var.route_table_tags, var.private_route_table_tags)
+    intra_route_table_tags   = merge(var.module_tags, var.route_table_tags, var.intra_route_table_tags)
   }
 }
 

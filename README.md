@@ -37,19 +37,31 @@ In contrast to the plain `aws_vpc` resource this module creates a full networkin
 Additional features can be enabled on demand.
 
 - **Standard Module Features**:
-  Cool Feature of the main resource, tags
+  All AWS VPC standard features are supported.
 
 - **Extended Module Features**:
-  Awesome Extended Feature of an additional related resource,
-  and another Cool Feature
+  Subnets,
+  Internet Gateway,
+  NAT Gateways,
+  Route Table,
+  and automatic Routes to the public internet by subnet class.
 
 - **Additional Features**:
-  a Cool Feature that is not actually a resource but a cool set up from us
+  Subnet classes supported out of the box are `public`, `private`, and `intra`,
+  **Subnet classes can be changed without the need of recreating the subnet resource,**
+  Subnets can be grouped by name and class,
+  NAT Gateways can be spawned in different modes including `single`, `one_per_az`, or `none`,
+  Subnet CIDR Blocks are calculated automatically by defining them as network numbers and not by CIDR Block strings.
 
 - *Features not yet implemented*:
-  Standard Features missing,
-  Extended Features planned,
-  Additional Features planned
+  VPC Peering support (coming next),
+  Cross Account VPC Peering support,
+  IPv6 support,
+  Subnet group support for AWS services like RDS and Redis,
+  VPC Endpoints support,
+  Custom Route support,
+  Network ACL support,
+  Secondary CIDR Block support.
 
 ## Getting Started
 
@@ -140,7 +152,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 ##### Subnets
 
-- **`subnets`**: *(Optional `list(subnets)`)*
+- **[`subnets`](#subnet-object-arguments)**: *(Optional `list(subnet)`)*
 
   A List of subnet objects that defined the subnet setup within the VPC.
   Default is `[]`.
@@ -155,6 +167,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
       cidr_block = cidrsubnet("10.0.0.0/16", 4, 0)
       newbits    = 4
+
       netnums_by_az = {
         a = [0] # "10.0.0.0/24"
         b = [1] # "10.0.1.0/24"
@@ -164,6 +177,8 @@ See [variables.tf] and [examples/] for details and use-cases.
     {
       group = "main"
       class = "private"
+
+      map_public_ip_on_launch = false
 
       cidr_block = cidrsubnet(local.cidr_block, 4, 1)
       newbits    = 4
@@ -196,7 +211,7 @@ See [variables.tf] and [examples/] for details and use-cases.
   Tags applied to each intra subnet.
   Default is `{}`.
 
-###### [`subnets`](#extended-resource-configuration) Object Arguments
+###### [`subnet`](#subnets) Object Arguments
 
 - **`group`**: *(Optional `string`)*
 
@@ -322,6 +337,8 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 The following attributes are exported by the module:
 
+### Computed Attributes
+
 - **`public_subnets_by_group`**
 
   A map of lists of public subnets keyed by group. (`aws_subnet`)
@@ -358,9 +375,11 @@ The following attributes are exported by the module:
 
   A map of lists of intra subnet IDs keyed by group.
 
+### Full Resource Objects
+
 - **`vpc`**
 
-  The VPC. (aws_vpc)
+  The VPC. (`aws_vpc`)
 
 - **`intra_route_tables`**
 
@@ -409,6 +428,8 @@ The following attributes are exported by the module:
 - **`subnets`**
 
   A map of subnets keyed by CIDR Blocks. (`aws_subnet`)
+
+### Module Attributes
 
 - **`module_inputs`**
 
