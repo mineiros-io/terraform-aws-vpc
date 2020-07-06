@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.0] - 2020-07-06
 ### Added
 - THIS RELEASE IS BREAKING BACKWARD COMPATIBILITY.
 - Add support to move subnets between subnet classes without recreation (public, private, intra).
@@ -59,7 +61,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Document the usage of examples
 - Add unit tests for basic use cases
 
-[Unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.0.3...HEAD
+<!-- markdown-link-check-disable -->
+[Unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.0.3...v0.1.0
+<!-- markdown-link-check-enable -->
 [0.0.3]: https://github.com/mineiros-io/terraform-aws-vpc/compare/55347bd0db3b37ad2d2bcebdf11ed1ea666ad788...v0.0.3
 [0.0.2]: https://github.com/mineiros-io/terraform-aws-vpc/compare/0608a9123de5d1c02a6fcd0a2ee8e4f5216c1a49...55347bd0db3b37ad2d2bcebdf11ed1ea666ad788
 [0.0.1]: https://github.com/mineiros-io/terraform-aws-vpc/commit/0608a9123de5d1c02a6fcd0a2ee8e4f5216c1a49
