@@ -1,3 +1,14 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# COMPLETE FEATURES UNIT TEST
+# This module tests a complete set of most/all non-exclusive features
+# The purpose is to activate everything the module offers, but trying to keep execution time and costs minimal.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+variable "aws_region" {
+  description = "(Optional) The AWS region in which all resources will be created."
+  type        = string
+  default     = "us-east-1"
+}
 
 variable "module_enabled" {
   description = "(Optional) Test module_enabled feature. Can be true or false."
@@ -11,20 +22,19 @@ variable "nat_gateway_mode" {
   default     = "single"
 }
 
-variable "aws_region" {
-  description = "(Optional) Run the test in the specific region."
-  type        = string
-  default     = "us-east-1"
+provider "aws" {
+  region  = var.aws_region
+  version = "~> 2.45"
 }
 
 locals {
   cidr_block = "192.168.0.0/16"
 }
 
-module "vpc" {
+module "test" {
   source = "../.."
 
-  module_enabled = var.module_enabled
+  module_enabled = true
 
   vpc_name         = "test"
   cidr_block       = local.cidr_block
@@ -59,13 +69,15 @@ module "vpc" {
       }
     },
   ]
-}
 
-provider "aws" {
-  region  = var.aws_region
-  version = "~> 2.0"
+  module_tags = {
+    Environment = "unknown"
+  }
+
+  module_depends_on = ["nothing"]
 }
 
 output "all" {
-  value = module.vpc
+  description = "All outputs of the module."
+  value       = module.test
 }
