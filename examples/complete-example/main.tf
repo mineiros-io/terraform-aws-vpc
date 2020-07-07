@@ -57,14 +57,10 @@ module "vpc" {
         b = [1] # "10.0.1.0/24"
       }
 
-      # subnets_by_az = {
-      #   a = ["10.0.0.0/24"]
-      #   b = ["10.0.1.0/24"]
-      # }
-
       # A map of tags that will be applied to this Subnet.
-      # A "Name" tag of the format xxxx will be applied automatically but can be overwritten
-      # this will be merged with var.module_tags, var.subnet_tags, tags
+      # A "Name" tag of the format '<vpc_name>-<group>-<class>-<az>-<idx>' (idx is the index in the list of netnums)
+      # will be applied automatically but can be overwritten.
+      # The Name tag will be merged with var.module_tags, var.subnet_tags, tags
       tags = {
       }
     },
