@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new input variables to support dynamic subnets.
 - Ensure cidr_blocks are align to network address.
 - Document all input arguments and output attributes.
+- Add minimal and module_enabled tests
 
 ### Changed
 - THIS RELEASE IS BREAKING BACKWARD COMPATIBILITY.
