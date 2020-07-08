@@ -180,7 +180,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
       map_public_ip_on_launch = false
 
-      cidr_block = cidrsubnet(local.cidr_block, 4, 1)
+      cidr_block = cidrsubnet("10.0.0.0/16", 4, 1)
       newbits    = 4
 
       netnums_by_az = {
