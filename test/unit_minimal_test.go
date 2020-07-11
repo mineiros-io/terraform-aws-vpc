@@ -6,11 +6,11 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestMinimalUnit(t *testing.T) {
+func TestUnitMinimal(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "minimal-unit",
+		TerraformDir: "unit-minimal",
 		Vars: map[string]interface{}{
 			"aws_region": "us-east-1",
 		},
