@@ -6,12 +6,12 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func TestCompleteUnit(t *testing.T) {
+func TestUnitComplete(t *testing.T) {
 	t.Parallel()
 
 	// deploy initial example with one nat gateway per az
 	terraformOptions := &terraform.Options{
-		TerraformDir: "complete-unit",
+		TerraformDir: "unit-complete",
 		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"nat_gateway_mode": "one_per_az",
@@ -25,7 +25,7 @@ func TestCompleteUnit(t *testing.T) {
 
 	// deploy upgraded example with single nat gateway
 	terraformOptions = &terraform.Options{
-		TerraformDir: "complete-unit",
+		TerraformDir: "unit-complete",
 		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"nat_gateway_mode": "single",
@@ -36,7 +36,7 @@ func TestCompleteUnit(t *testing.T) {
 
 	// deploy upgraded example with no nat gateways
 	terraformOptions = &terraform.Options{
-		TerraformDir: "complete-unit",
+		TerraformDir: "unit-complete",
 		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"nat_gateway_mode": "none",

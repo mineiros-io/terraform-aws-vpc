@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestModuleEnabled(t *testing.T) {
+func TestUnitDiabled(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: "./module-enabled",
+		TerraformDir: "unit-disabled",
 		Vars: map[string]interface{}{
 			"aws_region": "us-east-1",
 		},
@@ -23,7 +23,6 @@ func TestModuleEnabled(t *testing.T) {
 	terraform.InitAndPlan(t, terraformOptions)
 	stdout := terraform.ApplyAndIdempotent(t, terraformOptions)
 
-	// Validate that Terraform didn't create, change or destroy any resources
 	resourceCount := terraform.GetResourceCount(t, stdout)
 	assert.Equal(t, 0, resourceCount.Add, "No resources should have been created. Found %d instead.", resourceCount.Add)
 	assert.Equal(t, 0, resourceCount.Change, "No resources should have been changed. Found %d instead.", resourceCount.Change)

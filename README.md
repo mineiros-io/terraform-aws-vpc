@@ -57,6 +57,7 @@ Additional features can be enabled on demand.
   VPC Peering support (coming next),
   Cross Account VPC Peering support,
   IPv6 support,
+  VPC Flow Logs,
   Subnet group support for AWS services like RDS and Redis,
   VPC Endpoints support,
   Custom Route support,

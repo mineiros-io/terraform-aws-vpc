@@ -46,7 +46,13 @@ DOCKER_RUN_CMD  = docker run ${DOCKER_FLAGS} ${BUILD_TOOLS_DOCKER_IMAGE}
 .PHONY: default
 default: help
 
-## Run pre-commit hooks in build-tools docker container.
+# Not exposed as a callable target by `make help`, since this is a one-time shot to simplify the development of this module.
+.PHONY: template/adjust
+template/adjust: FILTER = -path ./.git -prune -a -type f -o -type f -not -name Makefile
+template/adjust:
+	@find . $(FILTER) -exec sed -i -e "s,terraform-module-template,$${PWD##*/},g" {} \;
+
+## Run pre-commit hooks inside a build-tools docker container.
 .PHONY: test/pre-commit
 test/pre-commit: DOCKER_FLAGS += ${DOCKER_SSH_FLAGS}
 test/pre-commit:
@@ -56,18 +62,17 @@ test/pre-commit:
 .PHONY: test/unit-tests
 test/unit-tests: DOCKER_FLAGS += ${DOCKER_SSH_FLAGS}
 test/unit-tests: DOCKER_FLAGS += ${DOCKER_AWS_FLAGS}
+test/unit-tests: TEST ?= "TestUnit"
 test/unit-tests:
 	@echo "${YELLOW}[TEST] ${GREEN}Start Running Go Tests in Docker Container.${RESET}"
-	$(call go-test,./test/...)
+	$(call go-test,./test -run $(TEST))
 
 ## Clean up cache and temporary files
 .PHONY: clean
 clean:
 	$(call rm-command,.terraform)
-	$(call rm-command,terraform.tfstate*)
 	$(call rm-command,*.tfplan)
 	$(call rm-command,*/*/.terraform)
-	$(call rm-command,*/*/terraform.tfstate*)
 	$(call rm-command,*/*/*.tfplan)
 
 ## Display help for all targets
