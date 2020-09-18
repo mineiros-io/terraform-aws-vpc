@@ -23,8 +23,7 @@ variable "nat_gateway_mode" {
 }
 
 provider "aws" {
-  region  = var.aws_region
-  version = "~> 2.45"
+  region = var.aws_region
 }
 
 locals {
