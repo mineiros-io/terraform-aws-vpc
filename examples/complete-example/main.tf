@@ -8,7 +8,7 @@ locals {
 
 module "vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "~> 0.1.0"
+  version = "~> 0.2.0"
 
   module_enabled = true
 
@@ -89,6 +89,5 @@ module "vpc" {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  version = "~> 2.0"
+  region = "us-east-1"
 }
