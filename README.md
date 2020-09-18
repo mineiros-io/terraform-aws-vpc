@@ -74,7 +74,7 @@ Most basic usage just setting required arguments:
 ```hcl
 module "terraform-aws-vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "0.1.0"
+  version = "~> 0.2.0"
 }
 ```
 
