@@ -10,7 +10,7 @@
 
 A [Terraform] base module for [Amazon Web Services (AWS)][AWS].
 
-***This module supports Terraform v0.13 as well as v0.12.20 and above
+***This module supports Terraform v0.14, v0.13 as well as v0.12.20 and above
 and is compatible with the terraform AWS provider v3 as well as v2.45 and above.***
 
 This module is part of our Infrastructure as Code (IaC) framework
@@ -74,7 +74,7 @@ Most basic usage just setting required arguments:
 ```hcl
 module "terraform-aws-vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "~> 0.2.0"
+  version = "~> 0.3.1"
 }
 ```
 
@@ -509,7 +509,7 @@ Run `make help` to see details on each available target.
 This module is licensed under the Apache License Version 2.0, January 2004.
 Please see [LICENSE] for full details.
 
-Copyright &copy; 2020 [Mineiros GmbH][homepage]
+Copyright &copy; 2021 [Mineiros GmbH][homepage]
 
 <!-- References -->
 

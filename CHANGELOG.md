@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2020-05-05
+- feat: feat: add support for Terraform `v0.14.x`
+
+### Changed
+- feat: upgrade terratest to `v1.34.0`
+- build: update secrets in GitHub Actions pipeline
+- build: upgrade build-tools to `v0.9.0`
+- build: upgrade pre-commit-hooks to `v0.2.2`
+
 ## [0.2.0]
 ### Added
 - Add support for Terraform AWS Provider v3.x
@@ -69,9 +78,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add unit tests for basic use cases
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.1.0...v0.2.0
+[Unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.2.0...v0.2.1
 <!-- markdown-link-check-enable -->
+[0.2.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.0.3...v0.1.0
 [0.0.3]: https://github.com/mineiros-io/terraform-aws-vpc/compare/55347bd0db3b37ad2d2bcebdf11ed1ea666ad788...v0.0.3
 [0.0.2]: https://github.com/mineiros-io/terraform-aws-vpc/compare/0608a9123de5d1c02a6fcd0a2ee8e4f5216c1a49...55347bd0db3b37ad2d2bcebdf11ed1ea666ad788
