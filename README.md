@@ -10,8 +10,8 @@
 
 A [Terraform] base module for [Amazon Web Services (AWS)][aws].
 
-**_This module supports Terraform v0.13 as well as v0.12.20 and above
-and is compatible with the terraform AWS provider v3 as well as v2.45 and above._**
+***This module supports Terraform v0.15, v0.14, v0.13, as well as v0.12.20 and above
+and is compatible with the terraform AWS provider v3 as well as v2.45 and above.***
 
 This module is part of our Infrastructure as Code (IaC) framework
 that enables our users and customers to easily deploy and manage reusable,
@@ -510,7 +510,7 @@ Run `make help` to see details on each available target.
 This module is licensed under the Apache License Version 2.0, January 2004.
 Please see [LICENSE] for full details.
 
-Copyright &copy; 2020 [Mineiros GmbH][homepage]
+Copyright &copy; 2021 [Mineiros GmbH][homepage]
 
 <!-- References -->
 
@@ -519,7 +519,7 @@ Copyright &copy; 2020 [Mineiros GmbH][homepage]
 [badge-build]: https://github.com/mineiros-io/terraform-aws-vpc/workflows/CI/CD%20Pipeline/badge.svg
 [badge-semver]: https://img.shields.io/github/v/tag/mineiros-io/terraform-aws-vpc.svg?label=latest&sort=semver
 [badge-license]: https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg
-[badge-terraform]: https://img.shields.io/badge/terraform-0.13%20and%200.12.20+-623CE4.svg?logo=terraform
+[badge-terraform]: https://img.shields.io/badge/terraform-0.15%20|%200.14%20|%200.13%20|%200.12.20+-623CE4.svg?logo=terraform
 [badge-slack]: https://img.shields.io/badge/slack-@mineiros--community-f32752.svg?logo=slack
 [build-status]: https://github.com/mineiros-io/terraform-aws-vpc/actions
 [releases-github]: https://github.com/mineiros-io/terraform-aws-vpc/releases

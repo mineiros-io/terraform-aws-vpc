@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0]
+
+- Add terraform `v0.14` support
+
 ## [0.3.0]
 
 ### BREAKING CHANGES
@@ -20,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - BREAKING: Fix terraform route modification behavior when switching nat_gateway_mode
+
+### Added
+
+- Add support for Terraform `v0.15`
 
 ## [0.2.0]
 
@@ -99,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdown-link-check-disable -->
 
-[unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0..0...HEAD
+[0.4.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.2.0...v0.3.0
 
 <!-- markdown-link-check-enable -->
