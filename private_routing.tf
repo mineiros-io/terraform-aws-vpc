@@ -108,8 +108,12 @@ resource "aws_route_table_association" "private" {
   depends_on = [var.module_depends_on]
 }
 
+locals {
+  nat_routes = { for k, v in aws_route_table.private : "${var.nat_gateway_mode}/${k}" => v }
+}
+
 resource "aws_route" "nat_gateway" {
-  for_each = length(local.nat_azs[var.nat_gateway_mode]) > 0 ? aws_route_table.private : {}
+  for_each = length(local.nat_azs[var.nat_gateway_mode]) > 0 ? local.nat_routes : {}
 
   route_table_id         = each.value.id
   destination_cidr_block = "0.0.0.0/0"
@@ -124,5 +128,12 @@ resource "aws_route" "nat_gateway" {
     create = "10m"
   }
 
-  depends_on = [var.module_depends_on]
+  # we depend on nat gateways to be available for setting and updating routes
+  # the implicit dependency does not work, when changing nat gateway mode as we will
+  # only depend on the new gateway implictly and not on the one being removed.
+  # (e.g. when switching nat_gateway_mode)
+  depends_on = [
+    var.module_depends_on,
+    aws_nat_gateway.nat_gateway,
+  ]
 }
