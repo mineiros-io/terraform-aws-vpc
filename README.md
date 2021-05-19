@@ -8,10 +8,10 @@
 
 # terraform-aws-vpc
 
-A [Terraform] base module for [Amazon Web Services (AWS)][AWS].
+A [Terraform] base module for [Amazon Web Services (AWS)][aws].
 
-***This module supports Terraform v0.13 as well as v0.12.20 and above
-and is compatible with the terraform AWS provider v3 as well as v2.45 and above.***
+**_This module supports Terraform v0.13 as well as v0.12.20 and above
+and is compatible with the terraform AWS provider v3 as well as v2.45 and above._**
 
 This module is part of our Infrastructure as Code (IaC) framework
 that enables our users and customers to easily deploy and manage reusable,
@@ -56,7 +56,7 @@ Additional features can be enabled on demand.
   NAT Gateways can be spawned in different modes including `single`, `one_per_az`, or `none`,
   Subnet CIDR Blocks are calculated automatically by defining them as network numbers and not by CIDR Block strings.
 
-- *Features not yet implemented*:
+- _Features not yet implemented_:
   VPC Peering support (coming next),
   Cross Account VPC Peering support,
   IPv6 support,
@@ -74,7 +74,7 @@ Most basic usage just setting required arguments:
 ```hcl
 module "terraform-aws-vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "~> 0.2.0"
+  version = "~> 0.3.0"
 }
 ```
 
@@ -86,18 +86,18 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 #### Module Configuration
 
-- **`module_enabled`**: *(Optional `bool`)*
+- **`module_enabled`**: _(Optional `bool`)_
 
   Specifies whether resources in the module will be created.
   Default is `true`.
 
-- **`module_tags`**: *(Optional `map(string)`)*
+- **`module_tags`**: _(Optional `map(string)`)_
 
   A map of tags that will be applied to all created resources that accept tags. Tags defined with 'module_tags' can be
   overwritten by resource-specific tags.
   Default is `{}`.
 
-- **`module_depends_on`**: *(Optional `list(dependencies)`)*
+- **`module_depends_on`**: _(Optional `list(dependencies)`)_
 
   A list of dependencies. Any object can be _assigned_ to this list to define a hidden external dependency.
 
@@ -105,48 +105,48 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 ##### VPC
 
-- **`vpc_name`**: *(Optional `string`)*
+- **`vpc_name`**: _(Optional `string`)_
 
   The name of the VPC. This will be used to tag resources with names by default.
   Default is `"main"`.
 
-- **`cidr_block`**: *(Optional `string`)*
+- **`cidr_block`**: _(Optional `string`)_
 
   The CIDR block for the VPC.
   Default is `"10.0.0.0/16"`.
 
-- **`instance_tenancy`**: *(Optional `string`)*
+- **`instance_tenancy`**: _(Optional `string`)_
 
   A tenancy option for instances launched into the VPC.
   Setting the tenancy to `dedicated` will create additional costs: See https://aws.amazon.com/ec2/pricing/dedicated-instances/ for details.
   Default is `"default"`.
 
-- **`enable_dns_support`**: *(Optional `bool`)*
+- **`enable_dns_support`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable DNS support in the VPC.
   Default is `true`.
 
-- **`enable_dns_hostnames`**: *(Optional `bool`)*
+- **`enable_dns_hostnames`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable DNS hostnames in the VPC.
   Default is `false`.
 
-- **`enable_classiclink`**: *(Optional `bool`)*
+- **`enable_classiclink`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. See the ClassicLink documentation for more information.
   Default is `false`.
 
-- **`enable_classiclink_dns_support`**: *(Optional `bool`)*
+- **`enable_classiclink_dns_support`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable ClassicLink DNS Support for the VPC. Only valid in regions and accounts that support EC2 Classic.
   Default is `false`.
 
-- **`assign_generated_ipv6_cidr_block`**: *(Optional `bool`)*
+- **`assign_generated_ipv6_cidr_block`**: _(Optional `bool`)_
 
   Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block.
   Default is `false`.
 
-- **`vpc_tags`**: *(Optional `string`)*
+- **`vpc_tags`**: _(Optional `string`)_
 
   A map of tags to assign to the vpc resource.
   Will be merged with `{ Name = var.vpc_name }` to set the name.
@@ -156,7 +156,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 ##### Subnets
 
-- **[`subnets`](#subnet-object-arguments)**: *(Optional `list(subnet)`)*
+- **[`subnets`](#subnet-object-arguments)**: _(Optional `list(subnet)`)_
 
   A List of subnet objects that defined the subnet setup within the VPC.
   Default is `[]`.
@@ -195,36 +195,36 @@ See [variables.tf] and [examples/] for details and use-cases.
   ]
   ```
 
-- **`subnet_tags`**: *(Optional `map(string)`)*
+- **`subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each subnet resource.
   Default is `{}`.
 
-- **`public_subnet_tags`**: *(Optional `map(string)`)*
+- **`public_subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each public subnet.
   Default is `{}`.
 
-- **`private_subnet_tags`**: *(Optional `map(string)`)*
+- **`private_subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each private subnet.
   Default is `{}`.
 
-- **`intra_subnet_tags`**: *(Optional `map(string)`)*
+- **`intra_subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each intra subnet.
   Default is `{}`.
 
 ###### [`subnet`](#subnets) Object Arguments
 
-- **`group`**: *(Optional `string`)*
+- **`group`**: _(Optional `string`)_
 
   A group name for the subnets. This can be any string. This information is used to group and tag resources within the subnets.
   The combination of `group` and `class` needs to be unique over all subnets defined.
   This can be changed at any time and will change the tags applied to resources by default.
   Default is `"main"`.
 
-- **`class`**: *(Optional `string`)*
+- **`class`**: _(Optional `string`)_
 
   The class of the subnet. This can be `"public"`, `"private"`, or "`intra`".
   This can be changed at any time and will change the routing of the subnet instead of recreating the subnet resource.
@@ -235,17 +235,17 @@ See [variables.tf] and [examples/] for details and use-cases.
 
   Default is `"private"`.
 
-- **`map_public_ip_on_launch`**: *(Optional `bool`)*
+- **`map_public_ip_on_launch`**: _(Optional `bool`)_
 
   Whether resources deployed into the subnet will be assigned a public IPv4 address when launched.
   Default is `true` when subnet class is `public`, `false` otherwise.
 
-- **`cidr_block`**: *(Optional `string`)*
+- **`cidr_block`**: _(Optional `string`)_
 
   Define the base CIDR Block of the subnets and the parameters to calculate each CIDR Block.
   Default is the CIDR Block of the VPC (`cidr_block`).
 
-- **`newbits`**: *(Optional `number`)*
+- **`newbits`**: _(Optional `number`)_
 
   How many bits should be added when calculating the subnets CIDR Blocks.
   Default is `8`.
@@ -269,7 +269,7 @@ See [variables.tf] and [examples/] for details and use-cases.
   }
   ```
 
-- **`tags`**: *(Optional `map(string`)*
+- **`tags`**: _(Optional `map(string`)_
 
   A map of tags that will be applied to each subnet in this group-class combination.
   Those tags will be merged with a `Name` tag, `module_tags`, `subnet_tags` and tags for the subnet class `public_subnet_tags`, `private_subnet_tags`, or `intra_subnet_tags`.
@@ -277,7 +277,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 
 ##### Internet Gateway
 
-- **`internet_gateway_tags`**: *(Optional `map(string)`)*
+- **`internet_gateway_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Internet Gateway.
   An Internet Gateway is created if a public subnet is defined.
@@ -290,7 +290,7 @@ See [variables.tf] and [examples/] for details and use-cases.
 > To save costs you can use `nat_gateway_mode` to define the number of NAT Gateways you want to deploy.
 > The best practice is to deploy one NAT Gateway per Availability Zone for higher reliability on production environments (`one_per_az`), while you can save some costs on staging and testing environments by deploying a single NAT Gateway (`single`).
 
-- **`nat_gateway_mode`**: *(Optional `string`)*
+- **`nat_gateway_mode`**: _(Optional `string`)_
 
   Set the mode for the NAT Gateways. NAT Gateways will only be created when private subnets are defined.
   Each private subnet needs at least one configured public subnet in the same availability zone.
@@ -305,34 +305,34 @@ See [variables.tf] and [examples/] for details and use-cases.
 
   Default is `"single"`.
 
-- **`nat_gateway_tags`**: *(Optional `map(string)`)*
+- **`nat_gateway_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created NAT Gateways.
   Default is `{}`.
 
-- **`eip_tags`**: *(Optional `map(string)`)*
+- **`eip_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created NAT Gateway Elastic IP Addresses.
   Default is `{}`.
 
 ##### Subnet Routing
 
-- **`route_table_tags`**: *(Optional `map(string)`)*
+- **`route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to all created Route Tables.
   Default is `{}`.
 
-- **`public_route_table_tags`**: *(Optional `map(string)`)*
+- **`public_route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Public Route Tables.
   Default is `{}`.
 
-- **`private_route_table_tags`**: *(Optional `map(string)`)*
+- **`private_route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Private Route Tables.
   Default is `{}`.
 
-- **`intra_route_table_tags`**: *(Optional `map(string)`)*
+- **`intra_route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Intra Route Tables.
   Default is `{}`.
@@ -450,6 +450,7 @@ The following attributes are exported by the module:
 ## External Documentation
 
 - AWS Documentation VPC:
+
   - https://aws.amazon.com/de/vpc/
 
 - Terraform AWS Provider Documentation:
@@ -515,30 +516,25 @@ Copyright &copy; 2020 [Mineiros GmbH][homepage]
 
 [homepage]: https://mineiros.io/?ref=terraform-aws-vpc
 [hello@mineiros.io]: mailto:hello@mineiros.io
-
 [badge-build]: https://github.com/mineiros-io/terraform-aws-vpc/workflows/CI/CD%20Pipeline/badge.svg
 [badge-semver]: https://img.shields.io/github/v/tag/mineiros-io/terraform-aws-vpc.svg?label=latest&sort=semver
 [badge-license]: https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg
 [badge-terraform]: https://img.shields.io/badge/terraform-0.13%20and%200.12.20+-623CE4.svg?logo=terraform
 [badge-slack]: https://img.shields.io/badge/slack-@mineiros--community-f32752.svg?logo=slack
-
 [build-status]: https://github.com/mineiros-io/terraform-aws-vpc/actions
 [releases-github]: https://github.com/mineiros-io/terraform-aws-vpc/releases
-
 [badge-tf-aws]: https://img.shields.io/badge/AWS-3%20and%202.45+-F8991D.svg?logo=terraform
 [releases-aws-provider]: https://github.com/terraform-providers/terraform-provider-aws/releases
-
 [releases-terraform]: https://github.com/hashicorp/terraform/releases
 [apache20]: https://opensource.org/licenses/Apache-2.0
 [slack]: https://join.slack.com/t/mineiros-community/shared_invite/zt-ehidestg-aLGoIENLVs6tvwJ11w9WGg
-[Terraform]: https://www.terraform.io
-[AWS]: https://aws.amazon.com/
-[Semantic Versioning (SemVer)]: https://semver.org/
-
+[terraform]: https://www.terraform.io
+[aws]: https://aws.amazon.com/
+[semantic versioning (semver)]: https://semver.org/
 [variables.tf]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/variables.tf
 [examples/]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/examples
-[Issues]: https://github.com/mineiros-io/terraform-aws-vpc/issues
-[LICENSE]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/LICENSE
-[Makefile]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/Makefile
-[Pull Requests]: https://github.com/mineiros-io/terraform-aws-vpc/pulls
-[Contribution Guidelines]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/CONTRIBUTING.md
+[issues]: https://github.com/mineiros-io/terraform-aws-vpc/issues
+[license]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/LICENSE
+[makefile]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/Makefile
+[pull requests]: https://github.com/mineiros-io/terraform-aws-vpc/pulls
+[contribution guidelines]: https://github.com/mineiros-io/terraform-aws-vpc/blob/master/CONTRIBUTING.md
