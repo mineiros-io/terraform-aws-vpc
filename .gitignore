@@ -44,3 +44,6 @@ vendor
 
 # Terratest directory used to store temporary data
 .test-data
+
+.terraform.lock.hcl
+
