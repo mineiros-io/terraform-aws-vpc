@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0]
 
-- Add terraform `v0.14` support
+- Add terraform `v0.15` support
 
 ## [0.3.0]
 
@@ -24,10 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - BREAKING: Fix terraform route modification behavior when switching nat_gateway_mode
-
-### Added
-
-- Add support for Terraform `v0.15`
 
 ## [0.2.0]
 

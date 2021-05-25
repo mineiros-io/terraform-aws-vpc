@@ -8,7 +8,7 @@ locals {
 
 module "vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "~> 0.3.0"
+  version = "~> 0.4.0"
 
   module_enabled = true
 
