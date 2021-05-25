@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0]
+
+- Add terraform `v0.15` support
+
 ## [0.3.0]
 
 ### BREAKING CHANGES
 
 - updating will recreate routes to nat gateways using a new resource key as terraform address
+
+### Added
+
+- Add support for terraform `v0.14`
 
 ### Fixed
 
@@ -95,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdown-link-check-disable -->
 
-[unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0..0...HEAD
+[0.4.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.2.0...v0.3.0
 
 <!-- markdown-link-check-enable -->
