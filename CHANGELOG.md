@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - updating will recreate routes to nat gateways using a new resource key as terraform address
 
+### Added
+
+- Add support for terraform `v0.14`
+
 ### Fixed
 
 - BREAKING: Fix terraform route modification behavior when switching nat_gateway_mode
