@@ -31,6 +31,8 @@ locals {
 
             group = try(subnet.group, "default")
             class = try(subnet.class, "private")
+
+            db_subnet_group_name = try(subnet.db_subnet_group_name, null)
             # routes = try(subnet.routes, [])
 
             tags = merge(
