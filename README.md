@@ -46,6 +46,7 @@ Additional features can be enabled on demand.
   Subnets,
   Internet Gateway,
   NAT Gateways,
+  Subnet group support for RDS,
   Route Table,
   and automatic Routes to the public internet by subnet class.
 
@@ -61,7 +62,7 @@ Additional features can be enabled on demand.
   Cross Account VPC Peering support,
   IPv6 support,
   VPC Flow Logs,
-  Subnet group support for AWS services like RDS and Redis,
+  Subnet group support for Redis,
   VPC Endpoints support,
   Custom Route support,
   Network ACL support,
@@ -268,6 +269,11 @@ See [variables.tf] and [examples/] for details and use-cases.
     b = [1] # "10.0.1.0/24"
   }
   ```
+
+- **`db_subnet_group_name`**: _(Optional `string`)_
+
+  The name of a db subnet group to create for all netnum ranges in this subnet.
+  The `db_subnet_group_name` resource tags will be cloned from the subnets.
 
 - **`tags`**: _(Optional `map(string`)_
 

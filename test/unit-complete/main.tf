@@ -67,6 +67,21 @@ module "test" {
         b = [129]
       }
     },
+    {
+      group = "db"
+      class = "intra"
+
+      db_subnet_group_name = "my-db-subnet-group"
+
+      tags = {
+        "foo" = "bar"
+      }
+
+      netnums_by_az = {
+        a = [130]
+        b = [131]
+      }
+    },
   ]
 
   module_tags = {
