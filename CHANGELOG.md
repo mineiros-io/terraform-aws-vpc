@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add support for db subnet groups
+- Add support terraform `v1.x`
 
 ## [0.4.0]
 
