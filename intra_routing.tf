@@ -24,6 +24,11 @@ resource "aws_route_table" "intra" {
   tags = merge(
     {
       Name = "${var.vpc_name}-intra-${each.key}"
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
+      "mineiros-io/aws/vpc/routetable-name"  = "${var.vpc_name}-intra-${each.key}"
+      "mineiros-io/aws/vpc/routetable-class" = "intra"
     },
     var.module_tags,
     var.route_table_tags,

@@ -55,7 +55,14 @@ resource "aws_eip" "eip" {
   vpc = true
 
   tags = merge(
-    { Name = "${var.vpc_name}-nat-private-${each.key}" },
+    {
+      Name = "${var.vpc_name}-nat-private-${each.key}"
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
+      "mineiros-io/aws/vpc/natgw-name" = "${var.vpc_name}-${each.key}"
+      "mineiros-io/aws/vpc/eip-name"   = "${var.vpc_name}-nat-private-${each.key}"
+    },
     var.module_tags,
     var.eip_tags,
   )
@@ -70,7 +77,13 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id     = aws_subnet.subnet[local.public_subnets_by_az[each.key][0].cidr_block].id
 
   tags = merge(
-    { Name = "${var.vpc_name}-${each.key}" },
+    {
+      Name = "${var.vpc_name}-${each.key}"
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
+      "mineiros-io/aws/vpc/natgw-name" = "${var.vpc_name}-${each.key}"
+    },
     var.module_tags,
     var.nat_gateway_tags,
   )
@@ -88,6 +101,11 @@ resource "aws_route_table" "private" {
   tags = merge(
     {
       Name = "${var.vpc_name}-private-${each.key}"
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
+      "mineiros-io/aws/vpc/routetable-name"  = "${var.vpc_name}-private-${each.key}"
+      "mineiros-io/aws/vpc/routetable-class" = "private"
     },
     var.module_tags,
     var.route_table_tags,

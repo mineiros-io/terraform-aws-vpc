@@ -22,6 +22,10 @@ resource "aws_internet_gateway" "internet_gateway" {
   tags = merge(
     {
       Name = var.vpc_name
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
+      "mineiros-io/aws/vpc/igw-name" = var.vpc_name
     },
     var.module_tags,
     var.internet_gateway_tags,
@@ -40,6 +44,11 @@ resource "aws_route_table" "public" {
   tags = merge(
     {
       Name = "${var.vpc_name}-public-${each.key}"
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
+      "mineiros-io/aws/vpc/routetable-name"  = "${var.vpc_name}-public-${each.key}"
+      "mineiros-io/aws/vpc/routetable-class" = "public"
     },
     var.module_tags,
     var.route_table_tags,

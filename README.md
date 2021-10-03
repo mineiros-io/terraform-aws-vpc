@@ -90,12 +90,14 @@ See [variables.tf] and [examples/] for details and use-cases.
 - **`module_enabled`**: _(Optional `bool`)_
 
   Specifies whether resources in the module will be created.
+
   Default is `true`.
 
 - **`module_tags`**: _(Optional `map(string)`)_
 
   A map of tags that will be applied to all created resources that accept tags. Tags defined with 'module_tags' can be
   overwritten by resource-specific tags.
+
   Default is `{}`.
 
 - **`module_depends_on`**: _(Optional `list(dependencies)`)_
@@ -109,17 +111,20 @@ See [variables.tf] and [examples/] for details and use-cases.
 - **`vpc_name`**: _(Optional `string`)_
 
   The name of the VPC. This will be used to tag resources with names by default.
+
   Default is `"main"`.
 
 - **`cidr_block`**: _(Optional `string`)_
 
   The CIDR block for the VPC.
+
   Default is `"10.0.0.0/16"`.
 
 - **`instance_tenancy`**: _(Optional `string`)_
 
   A tenancy option for instances launched into the VPC.
   Setting the tenancy to `dedicated` will create additional costs: See https://aws.amazon.com/ec2/pricing/dedicated-instances/ for details.
+
   Default is `"default"`.
 
 - **`enable_dns_support`**: _(Optional `bool`)_
@@ -130,39 +135,52 @@ See [variables.tf] and [examples/] for details and use-cases.
 - **`enable_dns_hostnames`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable DNS hostnames in the VPC.
+
   Default is `false`.
 
 - **`enable_classiclink`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable ClassicLink for the VPC. Only valid in regions and accounts that support EC2 Classic. See the ClassicLink documentation for more information.
+
   Default is `false`.
 
 - **`enable_classiclink_dns_support`**: _(Optional `bool`)_
 
   A boolean flag to enable/disable ClassicLink DNS Support for the VPC. Only valid in regions and accounts that support EC2 Classic.
+
   Default is `false`.
 
 - **`assign_generated_ipv6_cidr_block`**: _(Optional `bool`)_
 
   Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block.
+
   Default is `false`.
 
 - **`vpc_tags`**: _(Optional `string`)_
 
   A map of tags to assign to the vpc resource.
-  Will be merged with `{ Name = var.vpc_name }` to set the name.
+  To set the Name and add the capability to be used in data sources the `vpc_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                           = var.vpc_name
+    "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
+  }
+  ```
+
   Default is `{}`.
 
 #### Extended Resource Configuration
 
 ##### Subnets
 
-- **[`subnets`](#subnet-object-arguments)**: _(Optional `list(subnet)`)_
+- **`subnets`**: _(Optional `list(subnet)`)_
 
-  A List of subnet objects that defined the subnet setup within the VPC.
-  Default is `[]`.
+  A List of `subnet` objects that defined the subnet setup within the VPC.
 
-  ```
+  Example:
+
+  ```terraform
   subnets = [
     {
       group = "main"
@@ -196,90 +214,114 @@ See [variables.tf] and [examples/] for details and use-cases.
   ]
   ```
 
+  Default is `[]`.
+
+  Each `subnet` can have the following attributes:
+
+  - **`group`**: _(Optional `string`)_
+
+    A group name for the subnets. This can be any string. This information is used to group and tag resources within the subnets.
+    The combination of `group` and `class` needs to be unique over all subnets defined.
+    This can be changed at any time and will change the tags applied to resources by default.
+
+    Default is `"main"`.
+
+  - **`class`**: _(Optional `string`)_
+
+    The class of the subnet. This can be `"public"`, `"private"`, or "`intra`".
+    This can be changed at any time and will change the routing of the subnet instead of recreating the subnet resource.
+
+    - "public" defines a set of subnets where deployed components are reachable via the public Internet.
+    - "private" defines a set of subnets where components are not publicly reachable but can reach the Internet.
+    - "intra" defines a set of subnets that have no connectivity to the public Internet.
+
+    Default is `"private"`.
+
+  - **`map_public_ip_on_launch`**: _(Optional `bool`)_
+
+    Whether resources deployed into the subnet will be assigned a public IPv4 address when launched.
+
+    Default is `true` when subnet class is `public`, `false` otherwise.
+
+  - **`cidr_block`**: _(Optional `string`)_
+
+    Define the base CIDR Block of the subnets and the parameters to calculate each CIDR Block.
+
+    Default is the CIDR Block of the VPC (`cidr_block`).
+
+  - **`newbits`**: _(Optional `number`)_
+
+    How many bits should be added when calculating the subnets CIDR Blocks.
+
+    Default is `8`.
+
+  - **`netnums_by_az`**: **(Required `map(list(number)`)**
+
+    A map of subnets keyed by availability zone suffix (a,b,c,d,e,f).
+    The numbers define the network number with in the CIDR Block.
+    See https://www.terraform.io/docs/configuration/functions/cidrsubnet.html for details on how this is calculated internally.
+
+    Note: When adjusting cidr_block or newbits you might also need to adjust the netnums.
+    The example shows how to deploy one subnet in availability zone "a" ("10.0.0.0/24") and one subnet in availability zone "b" ("10.0.1.0/24").
+
+    ```terraform
+    cidr_block = "10.0.0.0/16"
+    newbits    = 8
+
+    netnums_by_az = {
+      a = [0] # "10.0.0.0/24"
+      b = [1] # "10.0.1.0/24"
+    }
+    ```
+
+  - **`db_subnet_group_name`**: _(Optional `string`)_
+
+    The name of a db subnet group to create for all netnum ranges in this subnet.
+    The `db_subnet_group_name` resource tags will be cloned from the subnets.
+
+  - **`tags`**: _(Optional `map(string`)_
+
+    A map of tags that will be applied to each subnet in this group-class combination.
+    Those tags will be merged with a `Name` tag, `module_tags`, `subnet_tags` and tags for the subnet class `public_subnet_tags`, `private_subnet_tags`, or `intra_subnet_tags`.
+
+    To set the Name and add the capability to be used in data sources the `subnet_tags` will always be merged with:
+
+    ```terraform
+    {
+      Name                               = "${var.vpc_name}-${subnet.group}-${subnet.class}-${az}-${idx}"
+      "mineiros-io/aws/vpc/vpc-name"     = var.vpc_name
+      "mineiros-io/aws/vpc/subnet-name"  = "${var.vpc_name}-${subnet.group}-${subnet.class}-${az}-${idx}"
+      "mineiros-io/aws/vpc/subnet-group" = subnet.group
+      "mineiros-io/aws/vpc/subnet-class" = subnet.class
+    }
+    ```
+
+    Default is `{}`.
+
 - **`subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each subnet resource.
+
   Default is `{}`.
 
 - **`public_subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each public subnet.
+
   Default is `{}`.
 
 - **`private_subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each private subnet.
+
   Default is `{}`.
 
 - **`intra_subnet_tags`**: _(Optional `map(string)`)_
 
   Tags applied to each intra subnet.
+
   Default is `{}`.
 
-###### [`subnet`](#subnets) Object Arguments
-
-- **`group`**: _(Optional `string`)_
-
-  A group name for the subnets. This can be any string. This information is used to group and tag resources within the subnets.
-  The combination of `group` and `class` needs to be unique over all subnets defined.
-  This can be changed at any time and will change the tags applied to resources by default.
-  Default is `"main"`.
-
-- **`class`**: _(Optional `string`)_
-
-  The class of the subnet. This can be `"public"`, `"private"`, or "`intra`".
-  This can be changed at any time and will change the routing of the subnet instead of recreating the subnet resource.
-
-  - "public" defines a set of subnets where deployed components are reachable via the public Internet.
-  - "private" defines a set of subnets where components are not publicly reachable but can reach the Internet.
-  - "intra" defines a set of subnets that have no connectivity to the public Internet.
-
-  Default is `"private"`.
-
-- **`map_public_ip_on_launch`**: _(Optional `bool`)_
-
-  Whether resources deployed into the subnet will be assigned a public IPv4 address when launched.
-  Default is `true` when subnet class is `public`, `false` otherwise.
-
-- **`cidr_block`**: _(Optional `string`)_
-
-  Define the base CIDR Block of the subnets and the parameters to calculate each CIDR Block.
-  Default is the CIDR Block of the VPC (`cidr_block`).
-
-- **`newbits`**: _(Optional `number`)_
-
-  How many bits should be added when calculating the subnets CIDR Blocks.
-  Default is `8`.
-
-- **`netnums_by_az`**: **(Required `map(list(number)`)**
-
-  A map of subnets keyed by availability zone suffix (a,b,c,d,e,f).
-  The numbers define the network number with in the CIDR Block.
-  See https://www.terraform.io/docs/configuration/functions/cidrsubnet.html for details on how this is calculated internally.
-
-  Note: When adjusting cidr_block or newbits you might also need to adjust the netnums.
-  The example shows how to deploy one subnet in availability zone "a" ("10.0.0.0/24") and one subnet in availability zone "b" ("10.0.1.0/24").
-
-  ```
-  cidr_block = "10.0.0.0/16"
-  newbits    = 8
-
-  netnums_by_az = {
-    a = [0] # "10.0.0.0/24"
-    b = [1] # "10.0.1.0/24"
-  }
-  ```
-
-- **`db_subnet_group_name`**: _(Optional `string`)_
-
-  The name of a db subnet group to create for all netnum ranges in this subnet.
-  The `db_subnet_group_name` resource tags will be cloned from the subnets.
-
-- **`tags`**: _(Optional `map(string`)_
-
-  A map of tags that will be applied to each subnet in this group-class combination.
-  Those tags will be merged with a `Name` tag, `module_tags`, `subnet_tags` and tags for the subnet class `public_subnet_tags`, `private_subnet_tags`, or `intra_subnet_tags`.
-  Default is `{}`.
 
 ##### Internet Gateway
 
@@ -288,6 +330,17 @@ See [variables.tf] and [examples/] for details and use-cases.
   A map of tags to apply to the created Internet Gateway.
   An Internet Gateway is created if a public subnet is defined.
   All public egress and ingress traffic of all public subnets will be routed through the same Internet Gateway.
+
+  To set the Name and add the capability to be used in data sources the `internet_gateway_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                           = var.vpc_name
+    "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
+    "mineiros-io/aws/vpc/igw-name" = var.vpc_name
+  }
+  ```
+
   Default is `{}`.
 
 ##### NAT Gateways
@@ -314,11 +367,34 @@ See [variables.tf] and [examples/] for details and use-cases.
 - **`nat_gateway_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created NAT Gateways.
+
+  To set the Name and add the capability to be used in data sources the `nat_gateway_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                             = "${var.vpc_name}-${each.key}"
+    "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
+    "mineiros-io/aws/vpc/natgw-name" = "${var.vpc_name}-${each.key}"
+  }
+  ```
+
   Default is `{}`.
 
 - **`eip_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created NAT Gateway Elastic IP Addresses.
+
+  To set the Name and add the capability to be used in data sources the `eip_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                             = "${var.vpc_name}-nat-private-${each.key}"
+    "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
+    "mineiros-io/aws/vpc/natgw-name" = "${var.vpc_name}-${each.key}"
+    "mineiros-io/aws/vpc/eip-name"   = "${var.vpc_name}-nat-private-${each.key}"
+  }
+  ```
+
   Default is `{}`.
 
 ##### Subnet Routing
@@ -326,21 +402,58 @@ See [variables.tf] and [examples/] for details and use-cases.
 - **`route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to all created Route Tables.
+
   Default is `{}`.
 
 - **`public_route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Public Route Tables.
+
+  To set the Name and add the capability to be used in data sources the `public_route_table_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                                   = "${var.vpc_name}-public-${each.key}"
+    "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
+    "mineiros-io/aws/vpc/routetable-name"  = "${var.vpc_name}-public-${each.key}"
+    "mineiros-io/aws/vpc/routetable-class" = "public"
+  }
+  ```
+
   Default is `{}`.
 
 - **`private_route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Private Route Tables.
+
+  To set the Name and add the capability to be used in data sources the `private_route_table_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                                   = "${var.vpc_name}-private-${each.key}"
+    "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
+    "mineiros-io/aws/vpc/routetable-name"  = "${var.vpc_name}-private-${each.key}"
+    "mineiros-io/aws/vpc/routetable-class" = "private"
+  }
+  ```
+
   Default is `{}`.
 
 - **`intra_route_table_tags`**: _(Optional `map(string)`)_
 
   A map of tags to apply to the created Intra Route Tables.
+
+  To set the Name and add the capability to be used in data sources the `intra_route_table_tags` will always be merged with:
+
+  ```terraform
+  {
+    Name                                   = "${var.vpc_name}-intra-${each.key}"
+    "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
+    "mineiros-io/aws/vpc/routetable-name"  = "${var.vpc_name}-intra-${each.key}"
+    "mineiros-io/aws/vpc/routetable-class" = "intra"
+  }
+  ```
+
   Default is `{}`.
 
 ## Module Attributes Reference
@@ -455,18 +568,17 @@ The following attributes are exported by the module:
 
 ## External Documentation
 
-- AWS Documentation VPC:
+### AWS Documentation VPC
+- https://aws.amazon.com/de/vpc/
 
-  - https://aws.amazon.com/de/vpc/
-
-- Terraform AWS Provider Documentation:
-  - https://www.terraform.io/docs/providers/aws/r/vpc.html
-  - https://www.terraform.io/docs/providers/aws/r/subnet.html
-  - https://www.terraform.io/docs/providers/aws/r/internet_gateway.html
-  - https://www.terraform.io/docs/providers/aws/r/nat_gateway.html
-  - https://www.terraform.io/docs/providers/aws/r/route_table.html
-  - https://www.terraform.io/docs/providers/aws/r/route_table_association.html
-  - https://www.terraform.io/docs/providers/aws/r/route.html
+### Terraform AWS Provider Documentation:
+- https://www.terraform.io/docs/providers/aws/r/vpc.html
+- https://www.terraform.io/docs/providers/aws/r/subnet.html
+- https://www.terraform.io/docs/providers/aws/r/internet_gateway.html
+- https://www.terraform.io/docs/providers/aws/r/nat_gateway.html
+- https://www.terraform.io/docs/providers/aws/r/route_table.html
+- https://www.terraform.io/docs/providers/aws/r/route_table_association.html
+- https://www.terraform.io/docs/providers/aws/r/route.html
 
 ## Module Versioning
 
@@ -516,7 +628,7 @@ Run `make help` to see details on each available target.
 This module is licensed under the Apache License Version 2.0, January 2004.
 Please see [LICENSE] for full details.
 
-Copyright &copy; 2021 [Mineiros GmbH][homepage]
+Copyright &copy; 2019-2021 [Mineiros GmbH][homepage]
 
 <!-- References -->
 
