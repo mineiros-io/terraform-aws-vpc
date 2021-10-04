@@ -38,6 +38,12 @@ locals {
             tags = merge(
               {
                 Name = "${var.vpc_name}-${subnet.group}-${subnet.class}-${az}-${idx}"
+
+                # special mineiros.io tags that can be used in data sources
+                "mineiros-io/aws/vpc/vpc-name"     = var.vpc_name
+                "mineiros-io/aws/vpc/subnet-name"  = "${var.vpc_name}-${try(subnet.group, "default")}-${try(subnet.class, "private")}-${az}-${idx}"
+                "mineiros-io/aws/vpc/subnet-group" = try(subnet.group, "default")
+                "mineiros-io/aws/vpc/subnet-class" = try(subnet.class, "private")
               },
               local.subnet_tags[try(subnet.class, "private")],
               try(subnet.tags, {}),

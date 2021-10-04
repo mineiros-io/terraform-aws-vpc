@@ -42,7 +42,12 @@ resource "aws_vpc" "vpc" {
   assign_generated_ipv6_cidr_block = var.assign_generated_ipv6_cidr_block
 
   tags = merge(
-    { Name = var.vpc_name },
+    {
+      Name = var.vpc_name
+
+      # special mineiros.io tags that can be used in data sources
+      "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
+    },
     var.module_tags,
     var.vpc_tags,
   )
