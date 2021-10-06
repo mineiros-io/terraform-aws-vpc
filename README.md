@@ -75,7 +75,7 @@ Most basic usage just setting required arguments:
 ```hcl
 module "terraform-aws-vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "~> 0.5.0"
+  version = "~> 0.6.0"
 }
 ```
 
@@ -278,6 +278,11 @@ See [variables.tf] and [examples/] for details and use-cases.
 
     The name of a db subnet group to create for all netnum ranges in this subnet.
     The `db_subnet_group_name` resource tags will be cloned from the subnets.
+
+  - **`elasticache_subnet_group_name`**: _(Optional `string`)_
+
+    The name of a elasticache subnet group to create for all netnum ranges in this subnet.
+    The `elasticache_subnet_group_name` resource tags will be cloned from the subnets.
 
   - **`tags`**: _(Optional `map(string`)_
 
