@@ -279,6 +279,11 @@ See [variables.tf] and [examples/] for details and use-cases.
     The name of a db subnet group to create for all netnum ranges in this subnet.
     The `db_subnet_group_name` resource tags will be cloned from the subnets.
 
+  - **`elasticache_subnet_group_name`**: _(Optional `string`)_
+
+    The name of a elasticache subnet group to create for all netnum ranges in this subnet.
+    The `elasticache_subnet_group_name` resource tags will be cloned from the subnets.
+
   - **`tags`**: _(Optional `map(string`)_
 
     A map of tags that will be applied to each subnet in this group-class combination.
