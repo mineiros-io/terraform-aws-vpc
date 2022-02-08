@@ -637,13 +637,13 @@ The following attributes are exported by the module:
 
 ### Terraform AWS Provider Documentation:
 
-- https://www.terraform.io/docs/providers/aws/r/vpc.html
-- https://www.terraform.io/docs/providers/aws/r/subnet.html
-- https://www.terraform.io/docs/providers/aws/r/internet_gateway.html
-- https://www.terraform.io/docs/providers/aws/r/nat_gateway.html
-- https://www.terraform.io/docs/providers/aws/r/route_table.html
-- https://www.terraform.io/docs/providers/aws/r/route_table_association.html
-- https://www.terraform.io/docs/providers/aws/r/route.html
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route
 
 ## Module Versioning
 
@@ -693,7 +693,7 @@ Run `make help` to see details on each available target.
 This module is licensed under the Apache License Version 2.0, January 2004.
 Please see [LICENSE] for full details.
 
-Copyright &copy; 2019-2021 [Mineiros GmbH][homepage]
+Copyright &copy; 2019-2022 [Mineiros GmbH][homepage]
 
 
 <!-- References -->

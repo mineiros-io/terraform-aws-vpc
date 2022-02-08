@@ -818,13 +818,13 @@ section {
     section {
       title   = "Terraform AWS Provider Documentation:"
       content = <<-END
-          - https://www.terraform.io/docs/providers/aws/r/vpc.html
-          - https://www.terraform.io/docs/providers/aws/r/subnet.html
-          - https://www.terraform.io/docs/providers/aws/r/internet_gateway.html
-          - https://www.terraform.io/docs/providers/aws/r/nat_gateway.html
-          - https://www.terraform.io/docs/providers/aws/r/route_table.html
-          - https://www.terraform.io/docs/providers/aws/r/route_table_association.html
-          - https://www.terraform.io/docs/providers/aws/r/route.html
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association
+          - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route
         END
     }
   }
