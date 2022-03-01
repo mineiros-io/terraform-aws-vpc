@@ -78,8 +78,7 @@ section {
 
       ```hcl
       module "terraform-aws-vpc" {
-        source  = "mineiros-io/vpc/aws"
-        version = "~> 0.6.0"
+        source  = "git@github.com:mineiros-io/terraform-aws-vpc.git?ref=v0.6.0"
       }
       ```
     END
