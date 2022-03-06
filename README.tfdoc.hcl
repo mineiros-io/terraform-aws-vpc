@@ -452,11 +452,20 @@ section {
             through the same set of NAT Gateways.
             Possible modes are `none`, `single`, or `one_per_az`. Choose
 
-            - `none` to create no NAT Gateways at all (use for debugging only),
-            - `single` to create a single NAT Gateway inside the first defined
+            - `"none"` to create no NAT Gateways at all (use for debugging only),
+            - `"single"` to create a single NAT Gateway inside the first defined
             Public Subnet, or
-            - `one_per_az` to create one NAT Gateway inside the first Public
+            - `"one_per_az"` to create one NAT Gateway inside the first Public
             Subnet in each Availability Zone.
+          END
+        }
+
+        variable "nat_gateway_single_mode_zone" {
+          type        = string
+          default     = "a random zone"
+          description = <<-END
+            Define the zone (short name) of the NAT gateway when nat_gateway_mode is "single" (e.g. "a", "b", or "c").
+            The AWS region will be added as a prefix.
           END
         }
 

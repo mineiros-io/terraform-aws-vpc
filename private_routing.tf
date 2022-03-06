@@ -35,10 +35,12 @@ locals {
     for az in local.missing_public_subnet_azs[var.nat_gateway_mode] : "Missing public subnet in az" => local.public_subnets_by_az[az]
   }
 
+  nat_gateway_single_zones = var.nat_gateway_single_mode_zone != null ? ["${local.region}-${var.nat_gateway_single_mode_zone}"] : try([local.matching_azs[0]], [])
+
   matching_azs = sort(setintersection(local.public_azs, local.private_azs))
   nat_azs = {
     one_per_az = local.matching_azs
-    single     = try([local.matching_azs[0]], [])
+    single     = local.nat_gateway_single_zones
     none       = []
   }
 

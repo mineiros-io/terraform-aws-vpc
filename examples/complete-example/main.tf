@@ -21,6 +21,8 @@ module "vpc" {
   # - "one_per_az" to create a NAT gateway per availability zone that has a private subnet. This needs a public subnets in the same AZs.
   nat_gateway_mode = "single"
 
+  nat_gateway_single_mode_zone = "a"
+
   subnets = [
     {
       # define a group name for the subnets. This can be any string. Default is "main".

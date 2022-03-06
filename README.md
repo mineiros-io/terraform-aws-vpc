@@ -386,13 +386,20 @@ environments by deploying a single NAT Gateway (`single`).
   through the same set of NAT Gateways.
   Possible modes are `none`, `single`, or `one_per_az`. Choose
 
-  - `none` to create no NAT Gateways at all (use for debugging only),
-  - `single` to create a single NAT Gateway inside the first defined
+  - `"none"` to create no NAT Gateways at all (use for debugging only),
+  - `"single"` to create a single NAT Gateway inside the first defined
   Public Subnet, or
-  - `one_per_az` to create one NAT Gateway inside the first Public
+  - `"one_per_az"` to create one NAT Gateway inside the first Public
   Subnet in each Availability Zone.
 
   Default is `"single"`.
+
+- [**`nat_gateway_single_mode_zone`**](#var-nat_gateway_single_mode_zone): *(Optional `string`)*<a name="var-nat_gateway_single_mode_zone"></a>
+
+  Define the zone (short name) of the NAT gateway when nat_gateway_mode is "single" (e.g. "a", "b", or "c").
+  The AWS region will be added as a prefix.
+
+  Default is `"a random zone"`.
 
 - [**`nat_gateway_tags`**](#var-nat_gateway_tags): *(Optional `map(string)`)*<a name="var-nat_gateway_tags"></a>
 
