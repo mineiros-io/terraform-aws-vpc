@@ -42,6 +42,8 @@ locals {
     none       = []
   }
 
+  nat_azs_set = toset(local.nat_azs[var.nat_gateway_mode])
+
   missing_public_subnet_azs = {
     one_per_az = sort(setsubtract(local.private_azs, local.public_azs))
     single     = length(local.matching_azs) == 0 ? sort(setsubtract(local.private_azs, local.public_azs)) : []
@@ -50,7 +52,7 @@ locals {
 }
 
 resource "aws_eip" "eip" {
-  for_each = var.module_enabled ? toset(local.nat_azs[var.nat_gateway_mode]) : []
+  for_each = var.module_enabled ? local.nat_azs_set : []
 
   vpc = true
 
@@ -71,9 +73,9 @@ resource "aws_eip" "eip" {
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  for_each = var.module_enabled ? aws_eip.eip : {}
+  for_each = var.module_enabled ? local.nat_azs_set : []
 
-  allocation_id = each.value.id
+  allocation_id = aws_eip.eip[each.key].id
   subnet_id     = aws_subnet.subnet[local.public_subnets_by_az[each.key][0].cidr_block].id
 
   tags = merge(
@@ -131,7 +133,7 @@ locals {
 }
 
 resource "aws_route" "nat_gateway" {
-  for_each = length(local.nat_azs[var.nat_gateway_mode]) > 0 ? local.nat_routes : {}
+  for_each = length(local.nat_azs_set) > 0 ? local.nat_routes : {}
 
   route_table_id         = each.value.id
   destination_cidr_block = "0.0.0.0/0"
