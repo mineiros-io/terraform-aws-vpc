@@ -401,6 +401,13 @@ environments by deploying a single NAT Gateway (`single`).
 
   Default is `"a random zone"`.
 
+- [**`nat_gateway_eip_allocation_ids`**](#var-nat_gateway_eip_allocation_ids): *(Optional `map(string)`)*<a name="var-nat_gateway_eip_allocation_ids"></a>
+
+  A map of EIP allocation ids to use for nat gateways keyed by short zone name (e.g. "a", "b", or "c").
+  If set no EIPs will be created by the module. If unset, the module will create the needed number of EIPs.
+
+  Default is `{}`.
+
 - [**`nat_gateway_tags`**](#var-nat_gateway_tags): *(Optional `map(string)`)*<a name="var-nat_gateway_tags"></a>
 
   A map of tags to apply to the created NAT Gateways.

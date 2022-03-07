@@ -46,6 +46,8 @@ locals {
 
   nat_azs_set = toset(local.nat_azs[var.nat_gateway_mode])
 
+  create_eips = length(keys(var.nat_gateway_eip_allocation_ids)) == 0
+
   missing_public_subnet_azs = {
     one_per_az = sort(setsubtract(local.private_azs, local.public_azs))
     single     = length(local.matching_azs) == 0 ? sort(setsubtract(local.private_azs, local.public_azs)) : []
@@ -54,7 +56,7 @@ locals {
 }
 
 resource "aws_eip" "eip" {
-  for_each = var.module_enabled ? local.nat_azs_set : []
+  for_each = var.module_enabled && local.create_eips ? local.nat_azs_set : []
 
   vpc = true
 
@@ -74,10 +76,18 @@ resource "aws_eip" "eip" {
   depends_on = [var.module_depends_on]
 }
 
+locals {
+  nat_gateway_eip_allocation_ids = { for k, v in var.nat_gateway_eip_allocation_ids : "${local.region}-${k}" => v }
+
+  eip_allocation_ids = { for k, v in aws_eip.eip : k => v.id }
+
+  allocation_ids = local.create_eips ? local.eip_allocation_ids : local.nat_gateway_eip_allocation_ids
+}
+
 resource "aws_nat_gateway" "nat_gateway" {
   for_each = var.module_enabled ? local.nat_azs_set : []
 
-  allocation_id = aws_eip.eip[each.key].id
+  allocation_id = local.allocation_ids[each.key]
   subnet_id     = aws_subnet.subnet[local.public_subnets_by_az[each.key][0].cidr_block].id
 
   tags = merge(

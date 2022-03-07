@@ -469,6 +469,15 @@ section {
           END
         }
 
+        variable "nat_gateway_eip_allocation_ids" {
+          type        = map(string)
+          description = <<-END
+            A map of EIP allocation ids to use for nat gateways keyed by short zone name (e.g. "a", "b", or "c").
+            If set no EIPs will be created by the module. If unset, the module will create the needed number of EIPs.
+          END
+          default     = {}
+        }
+
         variable "nat_gateway_tags" {
           type        = map(string)
           default     = {}

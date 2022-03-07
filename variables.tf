@@ -128,6 +128,12 @@ variable "nat_gateway_single_mode_zone" {
   default     = null
 }
 
+variable "nat_gateway_eip_allocation_ids" {
+  description = "(Optional) A map of EIP allocation ids to use for nat gateways keyed by short zone name (e.g. \"a\", \"b\", or \"c\")."
+  type        = map(string)
+  default     = {}
+}
+
 variable "nat_gateway_tags" {
   description = "(Optional) A map of tags to apply to the created NAT Gateways. Default is {}."
   type        = map(string)
