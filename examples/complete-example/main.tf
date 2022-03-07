@@ -8,7 +8,7 @@ locals {
 
 module "vpc" {
   source  = "mineiros-io/vpc/aws"
-  version = "~> 0.6.0"
+  version = "~> 0.7.0"
 
   module_enabled = true
 
@@ -20,6 +20,8 @@ module "vpc" {
   # - "single" to create a single NAT gateway in the first availability zone to route all private traffic to
   # - "one_per_az" to create a NAT gateway per availability zone that has a private subnet. This needs a public subnets in the same AZs.
   nat_gateway_mode = "single"
+
+  nat_gateway_single_mode_zone = "a"
 
   subnets = [
     {

@@ -78,7 +78,8 @@ section {
 
       ```hcl
       module "terraform-aws-vpc" {
-        source  = "git@github.com:mineiros-io/terraform-aws-vpc.git?ref=v0.6.0"
+        source  = "mineiros-io/vpc/aws"
+        version = "~> 0.7.0"
       }
       ```
     END
@@ -178,8 +179,8 @@ section {
           END
           readme_example = <<-END
             {
-              Name                           = var.vpc_name
-              "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
+              Name                           = "{vpc_name}"
+              "mineiros-io/aws/vpc/vpc-name" = "{vpc_name}"
             }
           END
         }
@@ -354,11 +355,11 @@ section {
 
               ```hcl
               {
-                Name                               = "{var.vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
-                "mineiros-io/aws/vpc/vpc-name"     = var.vpc_name
-                "mineiros-io/aws/vpc/subnet-name"  = "{var.vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
-                "mineiros-io/aws/vpc/subnet-group" = subnet.group
-                "mineiros-io/aws/vpc/subnet-class" = subnet.class
+                Name                               = "{vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
+                "mineiros-io/aws/vpc/vpc-name"     = "{vpc_name}"
+                "mineiros-io/aws/vpc/subnet-name"  = "{vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
+                "mineiros-io/aws/vpc/subnet-group" = "{subnet.group}"
+                "mineiros-io/aws/vpc/subnet-class" = "{subnet.class}"
               }
               ```
             END
@@ -415,9 +416,9 @@ section {
 
             ```hcl
             {
-              Name                           = var.vpc_name
-              "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
-              "mineiros-io/aws/vpc/igw-name" = var.vpc_name
+              Name                           = "{vpc_name}"
+              "mineiros-io/aws/vpc/vpc-name" = "{vpc_name}"
+              "mineiros-io/aws/vpc/igw-name" = "{vpc_name}"
             }
             ```
           END
@@ -452,12 +453,30 @@ section {
             through the same set of NAT Gateways.
             Possible modes are `none`, `single`, or `one_per_az`. Choose
 
-            - `none` to create no NAT Gateways at all (use for debugging only),
-            - `single` to create a single NAT Gateway inside the first defined
+            - `"none"` to create no NAT Gateways at all (use for debugging only),
+            - `"single"` to create a single NAT Gateway inside the first defined
             Public Subnet, or
-            - `one_per_az` to create one NAT Gateway inside the first Public
+            - `"one_per_az"` to create one NAT Gateway inside the first Public
             Subnet in each Availability Zone.
           END
+        }
+
+        variable "nat_gateway_single_mode_zone" {
+          type        = string
+          default     = "a random zone"
+          description = <<-END
+            Define the zone (short name) of the NAT gateway when nat_gateway_mode is "single" (e.g. "a", "b", or "c").
+            The AWS region will be added as a prefix.
+          END
+        }
+
+        variable "nat_gateway_eip_allocation_ids" {
+          type        = map(string)
+          description = <<-END
+            A map of EIP allocation ids to use for nat gateways keyed by short zone name (e.g. "a", "b", or "c").
+            If set no EIPs will be created by the module. If unset, the module will create the needed number of EIPs.
+          END
+          default     = {}
         }
 
         variable "nat_gateway_tags" {
@@ -471,9 +490,9 @@ section {
 
             ```hcl
             {
-              Name                             = "{var.vpc_name}-{each.key}"
-              "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
-              "mineiros-io/aws/vpc/natgw-name" = "{var.vpc_name}-{each.key}"
+              Name                             = "{vpc_name}-{zone}"
+              "mineiros-io/aws/vpc/vpc-name"   = "{vpc_name}"
+              "mineiros-io/aws/vpc/natgw-name" = "{vpc_name}-{zone}"
             }
             ```
           END
@@ -491,10 +510,10 @@ section {
 
             ```hcl
             {
-              Name                             = "{var.vpc_name}-nat-private-{each.key}"
-              "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
-              "mineiros-io/aws/vpc/natgw-name" = "{var.vpc_name}-{each.key}"
-              "mineiros-io/aws/vpc/eip-name"   = "{var.vpc_name}-nat-private-{each.key}"
+              Name                             = "{vpc_name}-nat-private-{zone}"
+              "mineiros-io/aws/vpc/vpc-name"   = "{vpc_name}"
+              "mineiros-io/aws/vpc/natgw-name" = "{vpc_name}-{zone}"
+              "mineiros-io/aws/vpc/eip-name"   = "{vpc_name}-nat-private-{zone}"
             }
             ```
           END
@@ -523,9 +542,9 @@ section {
 
             ```hcl
             {
-              Name                                   = "{var.vpc_name}-public-{each.key}"
-              "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
-              "mineiros-io/aws/vpc/routetable-name"  = "{var.vpc_name}-public-{each.key}"
+              Name                                   = "{vpc_name}-public-{group}"
+              "mineiros-io/aws/vpc/vpc-name"         = "{vpc_name}"
+              "mineiros-io/aws/vpc/routetable-name"  = "{vpc_name}-public-{group}"
               "mineiros-io/aws/vpc/routetable-class" = "public"
             }
             ```
@@ -543,9 +562,9 @@ section {
 
             ```hcl
             {
-              Name                                   = "{var.vpc_name}-private-{each.key}"
-              "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
-              "mineiros-io/aws/vpc/routetable-name"  = "{var.vpc_name}-private-{each.key}"
+              Name                                   = "{vpc_name}-private-{group}-{zone}"
+              "mineiros-io/aws/vpc/vpc-name"         = "{vpc_name}"
+              "mineiros-io/aws/vpc/routetable-name"  = "{vpc_name}-private-{group}-{zone}"
               "mineiros-io/aws/vpc/routetable-class" = "private"
             }
             ```
@@ -563,9 +582,9 @@ section {
 
             ```hcl
             {
-              Name                                   = "{var.vpc_name}-intra-{each.key}"
-              "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
-              "mineiros-io/aws/vpc/routetable-name"  = "{var.vpc_name}-intra-{each.key}"
+              Name                                   = "{vpc_name}-intra-{group}"
+              "mineiros-io/aws/vpc/vpc-name"         = "{vpc_name}"
+              "mineiros-io/aws/vpc/routetable-name"  = "{vpc_name}-intra-{group}"
               "mineiros-io/aws/vpc/routetable-class" = "intra"
             }
             ```

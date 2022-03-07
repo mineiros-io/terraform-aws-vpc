@@ -71,7 +71,8 @@ Most basic usage just setting required arguments:
 
 ```hcl
 module "terraform-aws-vpc" {
-  source  = "git@github.com:mineiros-io/terraform-aws-vpc.git?ref=v0.6.0"
+  source  = "mineiros-io/vpc/aws"
+  version = "~> 0.7.0"
 }
 ```
 
@@ -151,8 +152,8 @@ See [variables.tf] and [examples/] for details and use-cases.
 
   ```hcl
   {
-    Name                           = var.vpc_name
-    "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
+    Name                           = "{vpc_name}"
+    "mineiros-io/aws/vpc/vpc-name" = "{vpc_name}"
   }
   ```
 
@@ -306,11 +307,11 @@ See [variables.tf] and [examples/] for details and use-cases.
 
     ```hcl
     {
-      Name                               = "{var.vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
-      "mineiros-io/aws/vpc/vpc-name"     = var.vpc_name
-      "mineiros-io/aws/vpc/subnet-name"  = "{var.vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
-      "mineiros-io/aws/vpc/subnet-group" = subnet.group
-      "mineiros-io/aws/vpc/subnet-class" = subnet.class
+      Name                               = "{vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
+      "mineiros-io/aws/vpc/vpc-name"     = "{vpc_name}"
+      "mineiros-io/aws/vpc/subnet-name"  = "{vpc_name}-{subnet.group}-{subnet.class}-{az}-{idx}"
+      "mineiros-io/aws/vpc/subnet-group" = "{subnet.group}"
+      "mineiros-io/aws/vpc/subnet-class" = "{subnet.class}"
     }
     ```
 
@@ -354,9 +355,9 @@ See [variables.tf] and [examples/] for details and use-cases.
 
   ```hcl
   {
-    Name                           = var.vpc_name
-    "mineiros-io/aws/vpc/vpc-name" = var.vpc_name
-    "mineiros-io/aws/vpc/igw-name" = var.vpc_name
+    Name                           = "{vpc_name}"
+    "mineiros-io/aws/vpc/vpc-name" = "{vpc_name}"
+    "mineiros-io/aws/vpc/igw-name" = "{vpc_name}"
   }
   ```
 
@@ -386,13 +387,27 @@ environments by deploying a single NAT Gateway (`single`).
   through the same set of NAT Gateways.
   Possible modes are `none`, `single`, or `one_per_az`. Choose
 
-  - `none` to create no NAT Gateways at all (use for debugging only),
-  - `single` to create a single NAT Gateway inside the first defined
+  - `"none"` to create no NAT Gateways at all (use for debugging only),
+  - `"single"` to create a single NAT Gateway inside the first defined
   Public Subnet, or
-  - `one_per_az` to create one NAT Gateway inside the first Public
+  - `"one_per_az"` to create one NAT Gateway inside the first Public
   Subnet in each Availability Zone.
 
   Default is `"single"`.
+
+- [**`nat_gateway_single_mode_zone`**](#var-nat_gateway_single_mode_zone): *(Optional `string`)*<a name="var-nat_gateway_single_mode_zone"></a>
+
+  Define the zone (short name) of the NAT gateway when nat_gateway_mode is "single" (e.g. "a", "b", or "c").
+  The AWS region will be added as a prefix.
+
+  Default is `"a random zone"`.
+
+- [**`nat_gateway_eip_allocation_ids`**](#var-nat_gateway_eip_allocation_ids): *(Optional `map(string)`)*<a name="var-nat_gateway_eip_allocation_ids"></a>
+
+  A map of EIP allocation ids to use for nat gateways keyed by short zone name (e.g. "a", "b", or "c").
+  If set no EIPs will be created by the module. If unset, the module will create the needed number of EIPs.
+
+  Default is `{}`.
 
 - [**`nat_gateway_tags`**](#var-nat_gateway_tags): *(Optional `map(string)`)*<a name="var-nat_gateway_tags"></a>
 
@@ -403,9 +418,9 @@ environments by deploying a single NAT Gateway (`single`).
 
   ```hcl
   {
-    Name                             = "{var.vpc_name}-{each.key}"
-    "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
-    "mineiros-io/aws/vpc/natgw-name" = "{var.vpc_name}-{each.key}"
+    Name                             = "{vpc_name}-{zone}"
+    "mineiros-io/aws/vpc/vpc-name"   = "{vpc_name}"
+    "mineiros-io/aws/vpc/natgw-name" = "{vpc_name}-{zone}"
   }
   ```
 
@@ -421,10 +436,10 @@ environments by deploying a single NAT Gateway (`single`).
 
   ```hcl
   {
-    Name                             = "{var.vpc_name}-nat-private-{each.key}"
-    "mineiros-io/aws/vpc/vpc-name"   = var.vpc_name
-    "mineiros-io/aws/vpc/natgw-name" = "{var.vpc_name}-{each.key}"
-    "mineiros-io/aws/vpc/eip-name"   = "{var.vpc_name}-nat-private-{each.key}"
+    Name                             = "{vpc_name}-nat-private-{zone}"
+    "mineiros-io/aws/vpc/vpc-name"   = "{vpc_name}"
+    "mineiros-io/aws/vpc/natgw-name" = "{vpc_name}-{zone}"
+    "mineiros-io/aws/vpc/eip-name"   = "{vpc_name}-nat-private-{zone}"
   }
   ```
 
@@ -447,9 +462,9 @@ environments by deploying a single NAT Gateway (`single`).
 
   ```hcl
   {
-    Name                                   = "{var.vpc_name}-public-{each.key}"
-    "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
-    "mineiros-io/aws/vpc/routetable-name"  = "{var.vpc_name}-public-{each.key}"
+    Name                                   = "{vpc_name}-public-{group}"
+    "mineiros-io/aws/vpc/vpc-name"         = "{vpc_name}"
+    "mineiros-io/aws/vpc/routetable-name"  = "{vpc_name}-public-{group}"
     "mineiros-io/aws/vpc/routetable-class" = "public"
   }
   ```
@@ -465,9 +480,9 @@ environments by deploying a single NAT Gateway (`single`).
 
   ```hcl
   {
-    Name                                   = "{var.vpc_name}-private-{each.key}"
-    "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
-    "mineiros-io/aws/vpc/routetable-name"  = "{var.vpc_name}-private-{each.key}"
+    Name                                   = "{vpc_name}-private-{group}-{zone}"
+    "mineiros-io/aws/vpc/vpc-name"         = "{vpc_name}"
+    "mineiros-io/aws/vpc/routetable-name"  = "{vpc_name}-private-{group}-{zone}"
     "mineiros-io/aws/vpc/routetable-class" = "private"
   }
   ```
@@ -483,9 +498,9 @@ environments by deploying a single NAT Gateway (`single`).
 
   ```hcl
   {
-    Name                                   = "{var.vpc_name}-intra-{each.key}"
-    "mineiros-io/aws/vpc/vpc-name"         = var.vpc_name
-    "mineiros-io/aws/vpc/routetable-name"  = "{var.vpc_name}-intra-{each.key}"
+    Name                                   = "{vpc_name}-intra-{group}"
+    "mineiros-io/aws/vpc/vpc-name"         = "{vpc_name}"
+    "mineiros-io/aws/vpc/routetable-name"  = "{vpc_name}-intra-{group}"
     "mineiros-io/aws/vpc/routetable-class" = "intra"
   }
   ```

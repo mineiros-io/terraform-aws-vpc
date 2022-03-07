@@ -35,12 +35,18 @@ locals {
     for az in local.missing_public_subnet_azs[var.nat_gateway_mode] : "Missing public subnet in az" => local.public_subnets_by_az[az]
   }
 
+  nat_gateway_single_zones = var.nat_gateway_single_mode_zone != null ? ["${local.region}-${var.nat_gateway_single_mode_zone}"] : try([local.matching_azs[0]], [])
+
   matching_azs = sort(setintersection(local.public_azs, local.private_azs))
   nat_azs = {
     one_per_az = local.matching_azs
-    single     = try([local.matching_azs[0]], [])
+    single     = local.nat_gateway_single_zones
     none       = []
   }
+
+  nat_azs_set = toset(local.nat_azs[var.nat_gateway_mode])
+
+  create_eips = length(keys(var.nat_gateway_eip_allocation_ids)) == 0
 
   missing_public_subnet_azs = {
     one_per_az = sort(setsubtract(local.private_azs, local.public_azs))
@@ -50,7 +56,7 @@ locals {
 }
 
 resource "aws_eip" "eip" {
-  for_each = var.module_enabled ? toset(local.nat_azs[var.nat_gateway_mode]) : []
+  for_each = var.module_enabled && local.create_eips ? local.nat_azs_set : []
 
   vpc = true
 
@@ -70,10 +76,18 @@ resource "aws_eip" "eip" {
   depends_on = [var.module_depends_on]
 }
 
-resource "aws_nat_gateway" "nat_gateway" {
-  for_each = var.module_enabled ? aws_eip.eip : {}
+locals {
+  nat_gateway_eip_allocation_ids = { for k, v in var.nat_gateway_eip_allocation_ids : "${local.region}-${k}" => v }
 
-  allocation_id = each.value.id
+  eip_allocation_ids = { for k, v in aws_eip.eip : k => v.id }
+
+  allocation_ids = local.create_eips ? local.eip_allocation_ids : local.nat_gateway_eip_allocation_ids
+}
+
+resource "aws_nat_gateway" "nat_gateway" {
+  for_each = var.module_enabled ? local.nat_azs_set : []
+
+  allocation_id = local.allocation_ids[each.key]
   subnet_id     = aws_subnet.subnet[local.public_subnets_by_az[each.key][0].cidr_block].id
 
   tags = merge(
@@ -131,7 +145,7 @@ locals {
 }
 
 resource "aws_route" "nat_gateway" {
-  for_each = length(local.nat_azs[var.nat_gateway_mode]) > 0 ? local.nat_routes : {}
+  for_each = length(local.nat_azs_set) > 0 ? local.nat_routes : {}
 
   route_table_id         = each.value.id
   destination_cidr_block = "0.0.0.0/0"

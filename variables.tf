@@ -122,6 +122,18 @@ variable "nat_gateway_mode" {
   default     = "single"
 }
 
+variable "nat_gateway_single_mode_zone" {
+  description = "(Optional) Define the zone (short name) of the NAT gateway when nat_gateway_mode is \"single\" (e.g. \"a\", \"b\", or \"c\"). The AWS region will be added as a prefix. Defaults to a random zone."
+  type        = string
+  default     = null
+}
+
+variable "nat_gateway_eip_allocation_ids" {
+  description = "(Optional) A map of EIP allocation ids to use for nat gateways keyed by short zone name (e.g. \"a\", \"b\", or \"c\")."
+  type        = map(string)
+  default     = {}
+}
+
 variable "nat_gateway_tags" {
   description = "(Optional) A map of tags to apply to the created NAT Gateways. Default is {}."
   type        = map(string)
