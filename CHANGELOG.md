@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0]
+
+### Added
+
+- Add `nat_gateway_single_mode_zone` to be able to set a fixed zone for single NAT gateway deployments.
+- Add `nat_gateway_eip_allocation_ids` to allow bringing external EIPs instead of creating them with the module.
+
 ## [0.6.0]
 
 ### Added
@@ -117,13 +124,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Document the usage of examples
 - Add unit tests for basic use cases
 
-<!-- markdown-link-check-disable -->
-
 [unreleased]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.6.0...HEAD
+[0.7.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.5.0...v0.6.0
-
-<!-- markdown-link-check-enable -->
-
 [0.5.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mineiros-io/terraform-aws-vpc/compare/v0.2.0...v0.3.0
