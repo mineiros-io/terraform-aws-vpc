@@ -13,7 +13,7 @@ func TestUnitDiabled(t *testing.T) {
 	terraformOptions := &terraform.Options{
 		TerraformDir: "unit-disabled",
 		Vars: map[string]interface{}{
-			"aws_region": "us-east-1",
+			"aws_region": "eu-west-1",
 		},
 		Upgrade: true,
 	}

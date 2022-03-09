@@ -7,7 +7,7 @@
 variable "aws_region" {
   description = "(Optional) The AWS region in which all resources will be created."
   type        = string
-  default     = "us-east-1"
+  default     = "eu-west-1"
 }
 
 provider "aws" {
