@@ -35,7 +35,7 @@ locals {
     for az in local.missing_public_subnet_azs[var.nat_gateway_mode] : "Missing public subnet in az" => local.public_subnets_by_az[az]
   }
 
-  nat_gateway_single_zones = var.nat_gateway_single_mode_zone != null ? ["${local.region}-${var.nat_gateway_single_mode_zone}"] : try([local.matching_azs[0]], [])
+  nat_gateway_single_zones = var.nat_gateway_single_mode_zone != null ? ["${local.region}${var.nat_gateway_single_mode_zone}"] : try([local.matching_azs[0]], [])
 
   matching_azs = sort(setintersection(local.public_azs, local.private_azs))
   nat_azs = {
@@ -77,7 +77,7 @@ resource "aws_eip" "eip" {
 }
 
 locals {
-  nat_gateway_eip_allocation_ids = { for k, v in var.nat_gateway_eip_allocation_ids : "${local.region}-${k}" => v }
+  nat_gateway_eip_allocation_ids = { for k, v in var.nat_gateway_eip_allocation_ids : "${local.region}${k}" => v }
 
   eip_allocation_ids = { for k, v in aws_eip.eip : k => v.id }
 
