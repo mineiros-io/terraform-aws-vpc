@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUnitDiabled(t *testing.T) {
+func TestUnitDisabled(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
